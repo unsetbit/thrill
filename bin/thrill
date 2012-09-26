@@ -1,0 +1,87 @@
+#!/usr/bin/env node
+
+var app = require('commander'),
+	path = require('path'),
+	vm = require('vm'),
+	fs = require('fs');
+
+app.version('0.0.1')
+	.option('-c, --config', "Use configuration file")
+	
+
+app.command("*").action(function(configFilePath){
+	var config = {};
+	try {
+		vm.runInNewContext(fs.readFileSync(configFilePath), config);
+	} catch(e) {
+		if (e.name === 'SyntaxError') {
+		  console.error('Syntax error in config file!\n' + e.message);
+		} else if (e.code === 'ENOENT' || e.code === 'EISDIR') {
+		  console.error('Config file does not exist!');
+		} else {
+		  console.error('Invalid config file!\n', e);
+		}
+
+		process.exit(1);
+	}
+});
+
+app.parse(process.argv);
+
+var startThrill = function(config){
+	var createThrill = require('../').thrill.create,
+		createBullhorn = require('../../bullhorn').bullhorn.create,
+		createMinionMaster = require('../../minion-master').minionMaster.create,
+		httpServer,
+		winston,
+		logger;
+
+	if(config.log){
+		winston = require("winston");
+		logger = new (winston.Logger)({transports: [new (winston.transports.Console)({level: config.logLevel}) ]});
+	}
+
+	minionMaster = createMinionMaster({logger:logger});
+	httpServer = minionMaster.getHttpServer();
+
+	bullhorn = createBullhorn({
+		logger: logger, 
+		serverConfig: { server: httpServer },
+		clientHub: minionMaster.getBrowserHub()
+	});
+
+	thrill = createThrill({
+		logger: logger,
+		workerProviderHub: bullhorn
+	});
+
+	bullhorn.on("workerProviderConnected", function(client){
+		bullhorn.runLocalOnce(config.files, function(results){
+			console.log("done");
+			if(results.passed === true){
+				process.exit(0);
+			} else {
+				process.exit(1);
+			}
+		});
+	});
+
+
+	thrill = createThrill({
+		logger: logger
+	});
+
+	thrill.runLocal(config.files);
+
+	bullhorn.on("workerProviderConnected", function(client){
+		bullhorn.runLocalOnce(, function(results){
+			console.log("done");
+			if(results.passed === true){
+				process.exit(0);
+			} else {
+				process.exit(1);
+			}
+		});
+	});
+};
+

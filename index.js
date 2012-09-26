@@ -1,0 +1,1 @@
+exports.thrill = require('./server/lib/thrill.js');

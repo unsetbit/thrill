@@ -1,0 +1,12 @@
+files = [
+		"client/context/test/lib/qunit.js",
+		"client/context/test/lib/adapter/qunit.js",
+		"https://raw.github.com/jquery/qunit/master/test/test.js",
+		"https://raw.github.com/jquery/qunit/master/test/deepEqual.js",
+		"https://raw.github.com/jquery/qunit/master/test/swarminject.js"
+];
+
+port = 80;
+log = true;
+logLevel = "debug";
+singleRun = true;
