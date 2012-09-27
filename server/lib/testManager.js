@@ -12,35 +12,52 @@ exports.create = create = function(options){
 		testManager.setLogger(options.logger);
 	}
 
-	if(options.files){
-		testManager.setFiles(options.files);
+	if(options.scripts){
+		testManager.setScripts(options.scripts);
+	}
+
+	if(options.workerFilters){
+		testManager.setWorkerFilters(options.workerFilters);
 	}
 
 	return testManager;
 };
 
 exports.TestManager = TestManager = function(emitter){
-	this._emitter = emitter;
-	this._files = void 0;
 	this._id = uuid.v4();
-	this._files = void 0;
+	this._emitter = emitter;
+	this._started = false;
+	
+	this._scripts = void 0;
+	
 	this._hasPassed = void 0;
+	
+	this._workerFilters = void 0;
+	
 	this._workforces = [];
 	this._workers = {};
 	this._workerCount = 0;
-	this._started = false;
+	
 	this._logger = void 0;
 	this._loggingFunctions = void 0;
 
 	_.bindAll(this, "_workerDoneHandler", "_workerStartedHandler");
 };
 
-TestManager.prototype.setFiles = function(files){
-	this._files = files;
-};
-
 TestManager.prototype.getId = function(){
 	return this._id;
+};
+
+TestManager.prototype.setWorkerFilters = function(workerFilters){
+	this._workerFilters = workerFilters;
+};
+
+TestManager.prototype.getWorkerFilters = function(workerFilters){
+	return this._workerFilters;
+};
+
+TestManager.prototype.setScripts = function(scripts){
+	this._scripts = scripts;
 };
 
 TestManager.prototype.eventsToLog = [
@@ -83,7 +100,7 @@ TestManager.prototype.addWorkforce = function(workforce){
 };
 
 TestManager.prototype._startWorkforce = function(workforce){
-	workforce.setFiles(this._files);
+	workforce.setScripts(this._scripts);
 	workforce.start();
 };
 
@@ -134,6 +151,19 @@ TestManager.prototype._workerDoneHandler = function(worker){
 	} else if(!workerHasPassed){
 		this._hasPassed = false;
 	}
+	this._emit("result", {
+		attributes: worker.getAttributes(),
+		details: worker.getDetails(),
+		passed: worker.hasPassed()
+	});
+};
+
+TestManager.prototype.kill = function(){
+	this._workforces.forEach(function(workforce){
+		workforce.kill();
+	});
+
+	this._emit("dead");
 };
 
 TestManager.prototype.start = function(){

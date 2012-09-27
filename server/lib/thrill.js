@@ -1,6 +1,6 @@
 var _ = require("underscore"),
 	createTestManager = require('./testManager.js').create,
-	createReporter = require('./reporters/simpleConsole.js').create,
+	createThrillServer = require('./thrillServer.js').create,
 	staticServer = require('node-static'),
 	path = require('path'),
 	uuid = require('node-uuid'),
@@ -10,39 +10,36 @@ var _ = require("underscore"),
 exports.create = create = function(options){
 	var options = options || {},
 		emitter = options.emitter || new EventEmitter(),
-		fileServer = options.fileServer || new staticServer.Server(),
-		thrill = new Thrill(emitter, fileServer);
-
-	if(options.workforceProvider){
-		thrill.attachWorkforceProvider(options.workforceProvider);
-	}
-
-	if(options.httpServer){
-		thrill.setHttpServer(options.httpServer);
-	}
+		server = options.server,
+		thrill = new Thrill(server, emitter);
 
 	if(options.logger){
 		thrill.setLogger(options.logger);
 	}
 
+	if(options.workforceProvider){
+		thrill.attachWorkforceProvider(options.workforceProvider);
+	}
+
 	return thrill;
 };
 
-exports.Thrill = Thrill = function(emitter, fileServer){
-	this._continuousTestManagers = [];
-	this._workforceProviders = [];
-	this._fileMaps = {};
+exports.Thrill = Thrill = function(server, emitter){
 	this._id = uuid.v4();
+	
+	this._testManagers = [];
+	this._workforceProviders = [];
+	this._server = void 0;
 	this._emitter = emitter;
-	this._httpServer = void 0;
-	this._fileServer = fileServer;
-	this._baseWebPath = "/thrill";
+
 	this._logger = void 0;
 	this._loggingFunctions = void 0;
-	this._urlPattern = new RegExp("(" + this._baseWebPath + ")/(.+)/(.+)", "i");
-
-	_.bindAll(this, "_httpRequestHandler");
+	this._setServer(server);
 };
+
+Thrill.prototype._setServer = function(server){
+	this._server = server;
+}
 
 Thrill.prototype.eventsToLog = [
 	["info", "started", "Started"]
@@ -70,94 +67,14 @@ Thrill.prototype.setLogger = function(logger){
 	};
 };
 
-Thrill.prototype.setHttpServer = function(httpServer){
-	if(this._httpServer === httpServer){
-		return;
-	}
-
-	if(this._httpServer !== void 0){
-		this._httpServer.removeListener("request", this._httpRequestHandler);
-	}
-
-	this._httpServer = httpServer;
-
-	if(this._httpServer !== void 0){
-		this._httpServer.on("request", this._httpRequestHandler);
-	}
-};
-
-Thrill.prototype._serveLocalFiles = function(directory, originalFiles){
-	// Serve local files via http server
-	var self = this,
-		files = [],
-		localFileMap = {};
-
-	originalFiles.forEach(function(file){
-		var baseName;
-
-		if(file.indexOf('http') === 0){
-			files.push(file);
-			return;
-		}
-		
-		file = path.resolve(file);
-		baseName = path.basename(file);
-
-		// If another file of same name exists, generate a unique filename
-		if(localFileMap[baseName] !== void 0){
-			baseName = uuid.v4() + "-" + baseName;
-		}
-		files.push(self._baseWebPath + "/" + directory + "/" + baseName);
-		localFileMap[baseName] = file;
-	});
-
-	this._fileMaps[directory] = localFileMap;
-	
-	return files;
-};
-
-Thrill.prototype._stopServingLocalFiles = function(directory){
-	if(this._fileMaps[directory]){
-		delete this._fileMaps[directory];
-	}
-};
-
-Thrill.prototype._httpRequestHandler = function(request, response){
-	var self = this;
-	if(request.url.indexOf(this._baseWebPath) !== 0){
-		return; // Only handle the thrill namespace
-	}
-
-	request.addListener('end', function () {
-		var regexValues = request.url.match(self._urlPattern);
-		var fileMap = regexValues[2];
-		var fileKey = regexValues[3];
-
-		var fileMap = self._fileMaps[fileMap];
-		if(fileMap === void 0){
-			return;
-		}
-
-		var realFilePath = fileMap[fileKey];
-		console.log(realFilePath);	
-		var promise = new EventEmitter;
-		fs.stat(realFilePath, function (e, stat) {
-	        if (e) {
-	        	return;
-	        }
-
-	        self._fileServer.respond(null, 200, {}, [realFilePath], stat, request, response, function (status, headers) {
-	            self._fileServer.finish(status, headers, request, response, promise);
-	        });
-	    });     
-	});
-};
-
 Thrill.prototype.attachWorkforceProvider = function(workforceProvider){
 	this._workforceProviders.push(workforceProvider);
 
-	this._continuousTestManagers.forEach(function(testManager){
-		var workforce = workforceProvider.getContinuousWorkforce();
+	this._testManagers.forEach(function(testManager){
+		var workforce = workforceProvider.createWorkforce({
+			workerFilters: testManager.getWorkerFilters()
+		});
+		
 		testManager.addWorkforce(workforce);
 	});
 };
@@ -170,77 +87,60 @@ Thrill.prototype.detachWorkforceProvider = function(workforceProvider){
 	}
 };
 
-Thrill.prototype.createContinuousTestManager = function(files){
+Thrill.prototype.createTestManager = function(settings){
 	var self = this,
-		uid = uuid.v4(),
-		files = this._serveLocalFiles(uid, files),
-		testManager = createTestManager({files: files, logger: this._logger});
-	createReporter(testManager);
+		servedFiles,
+		testManager;
+
+	settings.logger = settings.logger || this._logger,
+	servedFiles = this._server.startServing(settings.scripts),
+	settings.scripts = servedFiles.urls;
+	testManager = createTestManager(settings);
 
 	this._workforceProviders.forEach(function(workforceProvider){
-		var workforce = workforceProvider.createContinuousWorkforce();
+		var workforce = workforceProvider.createWorkforce({
+			workerFilters: settings.workerFilters
+		});
 		testManager.addWorkforce(workforce);
 	});
 
-	this._continuousTestManagers.push(testManager);
-	testManager.on("done", function(){
-		self._removeContinuousTestManager(testManager);
-		self._stopServingLocalFiles(uid);
+	testManager.on("dead", function(){
+		self._server.stopServing(servedFiles.id);
 	});
-
+	
+	this.attachTestManager(testManager);
+	this._emit("newTestManager", testManager);
 	return testManager;
 };
 
-Thrill.prototype._removeContinuousTestManager = function(testManager){
-	var index = _.indexOf(this._continousTestManagers, testManager);
-
-	if(index > -1){
-		this._continousTestManagers.splice(index, 1);
+Thrill.prototype.attachTestManager = function(testManager){
+	var self = this,
+		index = _.indexOf(this._testManagers, testManager);
+	if(index === -1){
+		this._testManagers.push(testManager);	
+		testManager.on("dead", function(){
+			self.detachTestManager(testManager);
+		});
 	}
 };
 
-Thrill.prototype.runContinuously = function(files){
-	var testManager = this.createContinuousTestManager(files);
-	testManager.start();
-	return testManager;
+Thrill.prototype.detachTestManager = function(testManager){
+	var index = _.indexOf(this._testManagers, testManager);
+
+	if(index > -1){
+		this._testManagers.splice(index, 1);
+	}
 };
 
-Thrill.prototype.createTestManager = function(files){
-	var self = this,
-		uid = uuid.v4(),
-		files = this._serveLocalFiles(uid, files),
-		testManager = createTestManager({files: files, logger: this._logger});
-
-	createReporter(testManager);
-
-	this._workforceProviders.forEach(function(workforceProvider){
-		var workforce = workforceProvider.createWorkforce();
-		testManager.addWorkforce(workforce);
-	});
-
-	testManager.on("done", function(){
-		self._stopServingLocalFiles(uid);
-	});
-
-	return testManager;
-};
-
-Thrill.prototype.run = function(files, callback){
-	var testManager = this.createTestManager(files);
-	
+Thrill.prototype.run = function(settings){
+	var testManager = this.createTestManager(settings);
 	testManager.start();
-	testManager.on("stopped", function(){
-		callback(testManager.getResults());
-		testManager.destroy();
-	});
-
 	return testManager;
 };
 
 Thrill.prototype.on = function(event, callback){
 	this._emitter.on(event, callback);
 };
-
 
 Thrill.prototype.once = function(event, callback){
 	this._emitter.once(event, callback);

@@ -48,6 +48,9 @@ TestWorker.prototype.getDetails = function(){
 
 	return details;
 };
+TestWorker.prototype.getAttributes = function(){
+	return this._client.getAttributes();
+};
 
 TestWorker.prototype.getClient = function(){
 	return this._client;
