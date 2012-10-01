@@ -1,7 +1,6 @@
 var _ = require("underscore"),
 	createTestManager = require('./testManager.js').create,
 	createThrillServer = require('./thrillServer.js').create,
-	staticServer = require('node-static'),
 	path = require('path'),
 	uuid = require('node-uuid'),
 	EventEmitter = require('events').EventEmitter,
@@ -42,7 +41,8 @@ Thrill.prototype._setServer = function(server){
 }
 
 Thrill.prototype.eventsToLog = [
-	["info", "started", "Started"]
+	["info", "started", "Started"],
+	["debug", "dead", "Dead"]
 ];
 
 Thrill.prototype.getId = function(){
@@ -130,6 +130,13 @@ Thrill.prototype.detachTestManager = function(testManager){
 	if(index > -1){
 		this._testManagers.splice(index, 1);
 	}
+};
+
+Thrill.prototype.kill = function(){
+	this._testManagers.forEach(function(testManager){
+		testManager.kill();
+	});
+	this._emit("dead");
 };
 
 Thrill.prototype.run = function(settings){

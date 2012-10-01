@@ -4,9 +4,14 @@
   "description": "Exciting testing",
   "main": "index.js",
   "dependencies": {
-    "bullhorn": "~0.0.2"
+    "bullhorn": "~0.0.2",
+    "underscore": "~1.3.3",
+    "node-uuid": "~1.3.3",
+    "express": "~3.0.0"
   },
-  "devDependencies": {},
+  "optionalDependencies": {
+    "winston": "~0.6.2"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
