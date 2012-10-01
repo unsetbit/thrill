@@ -31,7 +31,7 @@ exports.TestWorker = TestWorker = function(client, socket, emitter){
 };
 
 TestWorker.prototype.getId = function(){
-	this._socket.getId();
+	return this._socket.getId();
 };
 
 TestWorker.prototype.getDetails = function(){

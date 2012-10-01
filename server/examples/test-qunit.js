@@ -28,22 +28,14 @@ thrill.on("newTestManager", function(testManager){
 
 minionMaster.spawnBrowser({browserName: "firefox"}, function(){
 	var testManager = thrill.run({
-		workerFilters: [{family: "Firefox"}],
+		workerFilters: [{family: "Firefox"}, {family:"Chrome"}],
 		scripts: [
 			path.resolve(path.dirname(module.filename), '../../client/lib/qunit.js'),
 			path.resolve(path.dirname(module.filename), '../../client/lib/adapters/qunit.js'),
 			'https://raw.github.com/jquery/qunit/master/test/test.js',
 			'https://raw.github.com/jquery/qunit/master/test/deepEqual.js',
 			'https://raw.github.com/jquery/qunit/master/test/swarminject.js'
-		],
-		callback: function(results){
-			console.log("done");
-			if(results.passed === true){
-				process.exit(0);
-			} else {
-				process.exit(1);
-			}
-		}
+		]
 	});
 
 	testManager.on("stopped", function(){
