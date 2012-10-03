@@ -5,7 +5,7 @@ var winston = require("winston"),
 	createThrillServer = require('../../').thrillServer.create,
 	createBullhornServer = require('../../../bullhorn').bullhornServer.create,
 	createReporter = require('../lib/reporters/simpleConsole.js').create,
-	logger = new (winston.Logger)({transports: [new (winston.transports.Console)({level: 'debug'}) ]});
+	logger = new (winston.Logger)({transports: [new (winston.transports.Console)({level: 'info'}) ]});
 
 var httpServer = require('http').createServer().listen(80);
 
@@ -26,7 +26,7 @@ thrill.on("newTestManager", function(testManager){
 	createReporter(testManager);
 });
 
-minionMaster.spawnBrowser({browserName: "firefox"}, function(){
+minionMaster.spawnBrowser({browserName: "chrome"}, function(){
 	var testManager = thrill.run({
 		workerFilters: [{family: "Firefox"}, {family:"Chrome"}],
 		scripts: [
