@@ -1,5 +1,7 @@
 var BullhornServer = require('../../../bullhorn').bullhornServer.BullhornServer;
 	path = require('path'),
+	_ = require('underscore'),
+	EventEmitter = require('events').EventEmitter,
 	express = require('express');
 
 exports.create = create = function(options){
@@ -7,19 +9,57 @@ exports.create = create = function(options){
 		port = options.port || 80,
 		httpServer = options.httpServer || require('http').createServer().listen(port),
 		baseWebPath = options.baseWebPath || "",
+		emitter = options.emitter || new EventEmitter(),
 		webRoot =  options.webRoot || path.resolve(path.dirname(module.filename), '../../../bullhorn/client/static'),
 		expressInstance = express(),
-		bullhornServer;
+		thrillServer;
 
 	httpServer.on('request', expressInstance);
 
-	bullhornServer = new BullhornServer(expressInstance, webRoot, baseWebPath)
+	thrillServer = new ThrillServer(expressInstance, webRoot, baseWebPath, emitter)
 
-	return bullhornServer;
+	return thrillServer;
 };
 
-exports.ThrillServer = ThrillServer = function(server, baseWebPath, webRoot){
+exports.ThrillServer = ThrillServer = function(server, webRoot, baseWebPath, emitter){
 	BullhornServer.apply(this, arguments);
+	this._emitter = emitter;
+	_.bindAll(this, "_postTest");
+	this._server.post(baseWebPath + '/test', this._postTest);
 };
 
 ThrillServer.prototype = Object.create(BullhornServer.prototype);
+
+ThrillServer.prototype._postTest = function(request, response){
+	var self = this, 
+		runSettings = "";
+
+	request.setEncoding('utf8');
+
+	request.on("data", function(chunk){
+		runSettings += chunk;
+	});
+	
+	request.on("end", function(){
+		console.log(runSettings);
+		runSettings = JSON.parse(runSettings);
+		self._emit('run', runSettings);	
+	})
+	
+};
+
+ThrillServer.prototype.on = function(event, callback){
+	this._emitter.on(event, callback);
+};
+
+ThrillServer.prototype.once = function(event, callback){
+	this._emitter.once(event, callback);
+};
+
+ThrillServer.prototype.removeListener = function(event, callback){
+	this._emitter.removeListener(event, callback);
+};
+
+ThrillServer.prototype._emit = function(event, data){
+	this._emitter.emit(event, data);
+};

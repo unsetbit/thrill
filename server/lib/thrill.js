@@ -33,11 +33,22 @@ exports.Thrill = Thrill = function(server, emitter){
 
 	this._logger = void 0;
 	this._loggingFunctions = void 0;
+
+	_.bindAll(this, 'run');
+
 	this._setServer(server);
 };
 
 Thrill.prototype._setServer = function(server){
+	if(this._server !== void 0){
+		this._server.removeListener('run', this.run);
+	}
+
 	this._server = server;
+
+	if(this._server !== void 0){
+		this._server.on('run', this.run);	
+	}
 }
 
 Thrill.prototype.eventsToLog = [
