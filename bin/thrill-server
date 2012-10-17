@@ -10,6 +10,7 @@ var startThrill = function(config){
 		createThrillServer = require('../').thrillServer.create,
 		createBullhorn = require('bullhorn').bullhorn.create,
 		createMinionMaster = require('minion-master').minionMaster.create,
+		createSeleniumBrowserProvider = require('minion-master').seleniumBrowserProvider.create,
 		createReporter = require('../server/lib/reporters/simpleConsole.js').create,
 		httpServer,
 		winston,
@@ -27,16 +28,19 @@ var startThrill = function(config){
 		createReporter(testManager);
 	});
 
-	var httpServer = require('http').createServer().listen(80);
+	var httpServer = require('http').createServer().listen(config.port, config.host);
 
 	var thrillServer = createThrillServer(thrill, { 
 		httpServer: httpServer, 
 		logger: logger
 	});
 
+	var seleniumBrowserProvider = createSeleniumBrowserProvider(config.gridHost, config.captureUrl, {port: config.gridPort});
+
 	var minionMaster = createMinionMaster({
 		httpServer: httpServer,
-		logger:logger
+		logger:logger,
+		browserProvider: seleniumBrowserProvider
 	});
 	var bullhorn = createBullhorn({	logger:logger });
 	bullhorn.attachClientHub(minionMaster);

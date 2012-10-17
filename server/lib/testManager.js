@@ -20,6 +20,12 @@ exports.create = create = function(options){
 		testManager.setWorkerFilters(options.workerFilters);
 	}
 
+	if(options.continuous !== true){
+		testManager.on("waiting", function(){
+			testManager.kill();
+		});
+	}
+
 	return testManager;
 };
 
@@ -139,6 +145,7 @@ TestManager.prototype.removeWorker = function(workerId){
 	this._workerCount -= 1;
 	if(this._workerCount === 0){
 		this._emit("stopped");
+		this._emit("waiting");
 	}
 };
 
