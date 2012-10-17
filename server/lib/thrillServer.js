@@ -1,4 +1,4 @@
-var BullhornServer = require('../../../bullhorn').bullhornServer.BullhornServer;
+var BullhornServer = require('bullhorn').bullhornServer.BullhornServer;
 	path = require('path'),
 	_ = require('underscore'),
 	EventEmitter = require('events').EventEmitter,
