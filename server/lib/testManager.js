@@ -31,7 +31,7 @@ exports.TestManager = TestManager = function(emitter){
 	this._scripts = void 0;
 	
 	this._hasPassed = void 0;
-	
+	this._results = [];
 	this._workerFilters = void 0;
 	
 	this._workforces = [];
@@ -143,7 +143,8 @@ TestManager.prototype.removeWorker = function(workerId){
 };
 
 TestManager.prototype._workerDoneHandler = function(worker){
-	var workerHasPassed = worker.hasPassed();
+	var result,
+		workerHasPassed = worker.hasPassed();
 
 	// If this is the first worker to be done, set status to worker's status
 	if(this._hasPassed === void 0){
@@ -151,11 +152,15 @@ TestManager.prototype._workerDoneHandler = function(worker){
 	} else if(!workerHasPassed){
 		this._hasPassed = false;
 	}
-	this._emit("result", {
+
+	result = {
 		attributes: worker.getAttributes(),
 		details: worker.getDetails(),
 		passed: worker.hasPassed()
-	});
+	}
+
+	this._results.push(result);
+	this._emit("result", result);
 };
 
 TestManager.prototype.kill = function(){
@@ -177,7 +182,10 @@ TestManager.prototype.start = function(){
 };
 
 TestManager.prototype.getResults = function(){
-	return {passed: this._hasPassed};
+	return {
+		passed: this._hasPassed,
+		results: this._results
+	};
 };
 
 TestManager.prototype.on = function(event, callback){

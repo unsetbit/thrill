@@ -9,8 +9,7 @@ var _ = require("underscore"),
 exports.create = create = function(options){
 	var options = options || {},
 		emitter = options.emitter || new EventEmitter(),
-		server = options.server,
-		thrill = new Thrill(server, emitter);
+		thrill = new Thrill(emitter);
 
 	if(options.logger){
 		thrill.setLogger(options.logger);
@@ -23,33 +22,16 @@ exports.create = create = function(options){
 	return thrill;
 };
 
-exports.Thrill = Thrill = function(server, emitter){
+exports.Thrill = Thrill = function(emitter){
 	this._id = uuid.v4();
 	
 	this._testManagers = [];
 	this._workforceProviders = [];
-	this._server = void 0;
 	this._emitter = emitter;
 
 	this._logger = void 0;
 	this._loggingFunctions = void 0;
-
-	_.bindAll(this, 'run');
-
-	this._setServer(server);
 };
-
-Thrill.prototype._setServer = function(server){
-	if(this._server !== void 0){
-		this._server.removeListener('run', this.run);
-	}
-
-	this._server = server;
-
-	if(this._server !== void 0){
-		this._server.on('run', this.run);	
-	}
-}
 
 Thrill.prototype.eventsToLog = [
 	["info", "started", "Started"],
@@ -104,8 +86,6 @@ Thrill.prototype.createTestManager = function(settings){
 		testManager;
 
 	settings.logger = settings.logger || this._logger,
-	servedFiles = this._server.startServing(settings.scripts),
-	settings.scripts = servedFiles.urls;
 	testManager = createTestManager(settings);
 
 	this._workforceProviders.forEach(function(workforceProvider){
@@ -113,10 +93,6 @@ Thrill.prototype.createTestManager = function(settings){
 			workerFilters: settings.workerFilters
 		});
 		testManager.addWorkforce(workforce);
-	});
-
-	testManager.on("dead", function(){
-		self._server.stopServing(servedFiles.id);
 	});
 	
 	this.attachTestManager(testManager);
