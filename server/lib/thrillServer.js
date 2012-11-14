@@ -9,7 +9,7 @@ exports.create = create = function(thrill, options){
 		hostname = options.hostname || 'localhost',
 		httpServer = options.httpServer || require('http').createServer().listen(port, hostname),
 		baseWebPath = options.baseWebPath || "",
-		webRoot =  options.webRoot || path.resolve(path.dirname(module.filename), '../../../bullhorn/client/static'),
+		webRoot =  options.webRoot || require('bullhorn').staticDir,
 		expressInstance = options.expressInstance || express(),
 		thrillServer;
 

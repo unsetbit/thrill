@@ -1,7 +1,7 @@
 log = true;
 logLevel = "debug";
 
-host = "localhost";
+host = "172.16.100.163";
 port = 80;
 
 browsers = ["chrome", "firefox", "internet explorer"];
