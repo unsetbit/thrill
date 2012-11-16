@@ -1,5 +1,4 @@
-var BullhornServer = require('bullhorn').bullhornServer.BullhornServer;
-	path = require('path'),
+var path = require('path'),
 	_ = require('underscore'),
 	express = require('express');
 
@@ -9,17 +8,20 @@ exports.create = create = function(thrill, options){
 		hostname = options.hostname || 'localhost',
 		httpServer = options.httpServer || require('http').createServer().listen(port, hostname),
 		baseWebPath = options.baseWebPath || "",
-		webRoot =  options.webRoot || require('bullhorn').staticDir,
+		webRoot =  options.webRoot || require('../../../minion-master').staticDir,
 		expressInstance = options.expressInstance || express(),
 		thrillServer;
 
 	httpServer.on('request', expressInstance);
 
-	thrillServer = new ThrillServer(expressInstance, hostname, port, baseWebPath, webRoot, thrill)
+	//thrillServer = new ThrillServer(expressInstance, hostname, port, baseWebPath, webRoot, thrill)
+	
+	expressInstance.use(baseWebPath, express.static(webRoot));
 
-	return thrillServer;
+	return httpServer;
 };
 
+/*
 exports.ThrillServer = ThrillServer = function(server, hostname, port, baseWebPath, webRoot, thrill){
 	BullhornServer.call(this, server, hostname, port, baseWebPath, webRoot);
 	
@@ -51,3 +53,4 @@ ThrillServer.prototype._postTest = function(request, response){
 		}
 	});
 };
+*/

@@ -62,10 +62,6 @@ TestManager.prototype.getWorkerFilters = function(workerFilters){
 	return this._workerFilters;
 };
 
-TestManager.prototype.setScripts = function(scripts){
-	this._scripts = scripts;
-};
-
 TestManager.prototype.eventsToLog = [
 	["info", "started", "Started"],
 	["info", "stop", "Stopping"],
@@ -106,7 +102,6 @@ TestManager.prototype.addWorkforce = function(workforce){
 };
 
 TestManager.prototype._startWorkforce = function(workforce){
-	workforce.setScripts(this._scripts);
 	workforce.start();
 };
 

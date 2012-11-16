@@ -1,6 +1,5 @@
 var _ = require("underscore"),
 	createTestManager = require('./testManager.js').create,
-	createThrillServer = require('./thrillServer.js').create,
 	path = require('path'),
 	uuid = require('node-uuid'),
 	EventEmitter = require('events').EventEmitter,
@@ -64,10 +63,7 @@ Thrill.prototype.attachWorkforceProvider = function(workforceProvider){
 	this._workforceProviders.push(workforceProvider);
 
 	this._testManagers.forEach(function(testManager){
-		var workforce = workforceProvider.createWorkforce({
-			workerFilters: testManager.getWorkerFilters()
-		});
-		
+		var workforce = workforceProvider.createWorkforce(settings.context, {workerFilters: testManager.getWorkerFilters()});
 		testManager.addWorkforce(workforce);
 	});
 };
@@ -89,9 +85,7 @@ Thrill.prototype.createTestManager = function(settings){
 	testManager = createTestManager(settings);
 
 	this._workforceProviders.forEach(function(workforceProvider){
-		var workforce = workforceProvider.createWorkforce({
-			workerFilters: settings.workerFilters
-		});
+		var workforce = workforceProvider.createWorkforce(settings.context, {workerFilters: settings.workerFilters});
 		testManager.addWorkforce(workforce);
 	});
 	
