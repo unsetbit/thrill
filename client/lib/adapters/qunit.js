@@ -1,5 +1,5 @@
 (function(env){
-	var adaptQUnitToThrill = function(bullhorn, qunit) {
+	var adaptQUnitToThrill = function(socket, qunit) {
 		var testStartTime, 
 			testLogMessages;
 			qunit = qunit || env.QUnit;
@@ -31,7 +31,7 @@
 			}
 
 			if (details.expected) {
-				message += "\nExpected: " + details.expected + ", Actual: "	+ details.actual;
+				message += " (Expected: " + details.expected + ", Actual: "	+ details.actual + ")";
 			}
 
 			if (details.source) {
@@ -48,16 +48,19 @@
 
 		// When test suite begins
 		qunit.begin(function(){
-			bullhorn.emit("start");
-			bullhorn.emit("suiteStart");
+			socket.emit("start");
 		});
 
 		// When module starts
-		//qunit.moduleStart(function(){});
+		qunit.moduleStart(function(details){
+			socket.emit("suiteStart", {
+				name: details.name
+			});
+		});
 
 		// When a test block begins
 		qunit.testStart(function(details) {
-			bullhorn.emit("testStart", {
+			socket.emit("testStart", {
 				name : details.name,
 				suite : details.module,
 			});
@@ -77,31 +80,37 @@
 		// When a test block ends
 		qunit.testDone(function(details) {
 			var timeElapsed = new Date().getTime() - testStartTime;
-			
-			bullhorn.emit("testEnd", {
+			console.log("test", details);
+			socket.emit("testEnd", {
 				name: details.name,
 				suite: details.module,
 				runtime: timeElapsed,
-				passed: details.passed,
-				failed: details.failed,
-				skipped: 0,
+				passCount: details.passed,
+				failCount: details.failed,
 				log: testLogMessages.join('\n')
 			});
 		});
 
 		// When a module ends
-		// qunit.moduleDone(function(){});
+		qunit.moduleDone(function(details){
+			console.log("module", details);
+			socket.emit("suiteEnd", {
+				name: details.name,
+				failCount: details.failed,
+				passCount: details.passed,
+				totalCount: details.total
+			});
+		});
 
 		// When a test suite ends
 		qunit.done(function(details) {
-			bullhorn.emit("suiteEnd", {
-				failed: details.failed,
-				passed: details.passed,
+			socket.emit("done", {
+				failCount: details.failed,
+				passCount: details.passed,
 				total: details.total,
-				runtime: details.runtime
+				runtime: details.runtime,
+				passed: details.failed === 0
 			});
-			
-			bullhorn.emit("end");
 			
 			// Clean up
 			testCount = null;
@@ -110,7 +119,7 @@
 		});
 	};
 
-	adaptQUnitToThrill(env.bullhorn, env.QUnit);
+	adaptQUnitToThrill(env.workerSocket, env.QUnit);
 
 // get at whatever the global object is, like window in browsers
 }( (function() {return this;}.call()) ));

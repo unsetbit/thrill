@@ -1,4 +1,4 @@
-log = true;
+log = false;
 logLevel = "debug";
 
 host = "172.16.100.163";

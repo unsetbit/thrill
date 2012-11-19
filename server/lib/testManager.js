@@ -1,72 +1,130 @@
-var createTestWorker = require('./testWorker.js').create;
-var EventEmitter = require('events').EventEmitter;
-var _ = require('underscore'),
+var createTester = require('./tester.js').create,
+	EventEmitter = require('events').EventEmitter,
+	_ = require('underscore'),
 	uuid = require('node-uuid');
 
-exports.create = create = function(options){
+exports.create = create = function(workforce, workerConfig, options){
 	var options = options || {},
-		emitter = options.emitter || new EventEmitter(),
-		testManager = new TestManager(emitter);
+		testManager = new TestManager(workforce, workerConfig);
 
 	if(options.logger){
 		testManager.setLogger(options.logger);
 	}
 
-	if(options.scripts){
-		testManager.setScripts(options.scripts);
-	}
-
-	if(options.workerFilters){
-		testManager.setWorkerFilters(options.workerFilters);
-	}
-
-	if(options.continuous !== true){
-		testManager.on("waiting", function(){
-			testManager.kill();
-		});
-	}
-
 	return testManager;
 };
 
-exports.TestManager = TestManager = function(emitter){
+exports.TestManager = TestManager = function(workforce, workerConfig, timeout){
 	this._id = uuid.v4();
-	this._emitter = emitter;
-	this._started = false;
+	this._emitter = new EventEmitter();
 	
-	this._scripts = void 0;
-	
-	this._hasPassed = void 0;
-	this._results = [];
-	this._workerFilters = void 0;
-	
-	this._workforces = [];
-	this._workers = {};
-	this._workerCount = 0;
-	
-	this._logger = void 0;
-	this._loggingFunctions = void 0;
+	this._workforce = workforce;
 
-	_.bindAll(this, "_workerDoneHandler", "_workerStartedHandler");
+	this._workerConfig = workerConfig;
+	this._timeout = timeout;
+	this._passed = false;
+	this._testers = {};
+	this._testerCount = 0;
+	
+	_.bindAll(this, "_testerDeadHandler", 
+					"_newWorkerHandler",
+					"_workforceDeadHandler");
+
+	workforce.on('dead', this._workforceDeadHandler);
 };
 
 TestManager.prototype.getId = function(){
 	return this._id;
 };
 
-TestManager.prototype.setWorkerFilters = function(workerFilters){
-	this._workerFilters = workerFilters;
+TestManager.prototype.start = function(){
+	var self = this,
+		workforce = this._workforce;
+	
+	if(this._started) return; // already started;
+	this._started = true;
+
+	workforce.on("newWorker", this._newWorkerHandler);
+	workforce.start();
+
+	this._emit("start");
 };
 
-TestManager.prototype.getWorkerFilters = function(workerFilters){
-	return this._workerFilters;
+TestManager.prototype.passed = function(){
+	return this._passed;
+};
+
+TestManager.prototype.kill = function(){
+	if(this._isDead) return;
+	this._isDead = true;
+
+	this._workforce.kill();
+	this._emit("dead");
+	this._emitter.removeAllListeners();
+};
+
+TestManager.prototype._newWorkerHandler = function(worker){
+	this._addTester(worker);
+};
+
+TestManager.prototype._addTester = function(worker){
+	var self = this,
+		tester = createTester(worker),
+		testers = this._testers,
+		testerId = tester.getId();
+
+	tester.on("dead", this._testerDeadHandler);
+
+	testers[testerId] = tester;
+	this._testerCount += 1;
+	this._emit("newTester", tester);
+};
+
+TestManager.prototype._testerDeadHandler = function(tester){
+	this._removeTester(tester);
+};
+
+TestManager.prototype._removeTester = function(tester){
+	var testerId = tester.getId(),
+		testers = this._testers;
+	
+	if(testers[testerId] !== void 0){
+		delete testers[testerId];
+		this._testerCount -= 1;
+		
+		if(!tester.passed()){
+			this._passed = false;
+		}
+		
+		if(this._testerCount === 0){
+			this._emit("stop");
+		}
+	}
+};
+
+TestManager.prototype._workforceDeadHandler = function(){
+	this._emit("stop");
+	this.kill();
+};
+
+// Event Handlers
+TestManager.prototype.on = function(event, callback){
+	this._emitter.on(event, callback);
+};
+
+TestManager.prototype.removeListener = function(event, callback){
+	this._emitter.removeListener(event, callback);
+};
+
+TestManager.prototype._emit = function(event, data){
+	this._emitter.emit(event, data);
 };
 
 TestManager.prototype.eventsToLog = [
-	["info", "started", "Started"],
-	["info", "stop", "Stopping"],
-	["debug", "stopped", "Stopped"],
-	["debug", "running", "Running"]
+	["info", "start", "Started"],
+	["info", "stop", "Stopped"],
+	["info", "newTester", "New tester"],
+	["info", "dead", "Dead"]
 ];
 
 TestManager.prototype.setLogger = function(logger){
@@ -85,124 +143,4 @@ TestManager.prototype.setLogger = function(logger){
 	if(this._logger !== void 0){
 		this._loggingFunctions = logEvents(logger, this, prefix, this.eventsToLog);
 	};
-};
-
-
-TestManager.prototype.getFiles = function(){
-	return this._files;
-};
-
-TestManager.prototype.addWorkforce = function(workforce){
-	this._workforces.push(workforce);
-	workforce.on("workerStarted", this._workerStartedHandler);
-
-	if(this._started){
-		this._startWorkforce(workforce);
-	}
-};
-
-TestManager.prototype._startWorkforce = function(workforce){
-	workforce.start();
-};
-
-TestManager.prototype._workerStartedHandler = function(data){
-	var provider = data.provider,
-		socket = data.socket;
-
-	this.addWorker(provider, socket);
-};
-
-TestManager.prototype.addWorker = function(provider, socket){
-	var self = this,
-		worker = createTestWorker(provider, socket),
-		workerId = worker.getId();
-
-	this._workers[workerId] = worker;
-	this._workerCount += 1;
-	if(this._workerCount === 1){
-		this._emit("running");
-	}
-
-	worker.on("end", this._workerDoneHandler);
-	socket.on("done", function(){
-		self.removeWorker(workerId);
-	});
-
-	this._emit("newWorker", worker);
-};
-
-TestManager.prototype.removeWorker = function(workerId){
-	if(this._workers[workerId] === void 0){
-		return;
-	}
-
-	delete this._workers[workerId];
-	this._workerCount -= 1;
-	if(this._workerCount === 0){
-		this._emit("stopped");
-		this._emit("waiting");
-	}
-};
-
-TestManager.prototype._workerDoneHandler = function(worker){
-	var result,
-		workerHasPassed = worker.hasPassed();
-
-	// If this is the first worker to be done, set status to worker's status
-	if(this._hasPassed === void 0){
-		this._hasPassed = workerHasPassed;
-	} else if(!workerHasPassed){
-		this._hasPassed = false;
-	}
-
-	result = {
-		attributes: worker.getAttributes(),
-		details: worker.getDetails(),
-		passed: worker.hasPassed()
-	}
-
-	this._results.push(result);
-	this._emit("result", result);
-};
-
-TestManager.prototype.kill = function(){
-	this._workforces.forEach(function(workforce){
-		workforce.kill();
-	});
-
-	this._emit("dead");
-};
-
-TestManager.prototype.start = function(){
-	var self = this;
-	this._started = true;
-
-	this._workforces.forEach(function(workforce){
-		self._startWorkforce(workforce);
-	});
-	this._emit("started");
-};
-
-TestManager.prototype.getResults = function(){
-	return {
-		passed: this._hasPassed,
-		results: this._results
-	};
-};
-
-TestManager.prototype.on = function(event, callback){
-	this._emitter.on(event, callback);
-};
-
-
-TestManager.prototype.once = function(event, callback){
-	this._emitter.once(event, callback);
-};
-
-TestManager.prototype.removeListener = function(event, callback){
-	this._emitter.removeListener(event, callback);
-};
-
-TestManager.prototype._emit = function(event, data){
-	this._emitter.emit(event, data);
 };

@@ -8,10 +8,8 @@ var app = require('commander'),
 var startThrill = function(config){
 	var createThrill = require('../').thrill.create,
 		createThrillServer = require('../').thrillServer.create,
-		createBullhorn = require('bullhorn').bullhorn.create,
 		createMinionMaster = require('minion-master').minionMaster.create,
-		createSeleniumBrowserProvider = require('minion-master').seleniumBrowserProvider.create,
-		createReporter = require('../server/lib/reporters/simpleConsole.js').create,
+		createReporter = require('../server/lib/reporter/unifiedDot.js').create,
 		httpServer,
 		winston,
 		logger;
@@ -21,30 +19,31 @@ var startThrill = function(config){
 		logger = new (winston.Logger)({transports: [new (winston.transports.Console)({level: config.logLevel}) ]});
 	}
 
-
-	var thrill = createThrill({ logger: logger });
-
-	thrill.on("newTestManager", function(testManager){
-		createReporter(testManager);
-	});
-
-	var httpServer = require('http').createServer().listen(config.port, config.host);
-
-	var thrillServer = createThrillServer(thrill, { 
-		httpServer: httpServer, 
-		logger: logger
-	});
-
-	var seleniumBrowserProvider = createSeleniumBrowserProvider(config.gridHost, config.captureUrl, {port: config.gridPort});
+	var httpServer = require('http').createServer().listen(80, 'localhost');
+	var thrillServer = createThrillServer({ httpServer: httpServer, logger: logger });
 
 	var minionMaster = createMinionMaster({
 		httpServer: httpServer,
-		logger:logger,
-		browserProvider: seleniumBrowserProvider
+		logger:logger
 	});
-	var bullhorn = createBullhorn({	logger:logger });
-	bullhorn.attachClientHub(minionMaster);
-	thrill.attachWorkforceProvider(bullhorn);
+
+	var thrill = createThrill(minionMaster, { logger: logger });
+
+	thrillServer.on('runRequest', function(data, callback){
+		var workerConfig = data.workerConfig,
+			options = data.options,
+			testManager = thrill.getTestManager(workerConfig, options),
+			reporter = createReporter(testManager);
+		
+		reporter.on('results', function(data){
+			callback({
+				passed: testManager.passed(),
+				testerData: data
+			});
+		});
+
+		testManager.start();
+	});
 };
 
 app.version('0.0.1')
