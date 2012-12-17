@@ -20,7 +20,7 @@ var scripts = thrillServer.serveFiles([
 createRemoteQueen(onReady);
 
 function onReady(queen){
-	var thrill = createThrill(queen, { logger: log});
+	var thrill = createThrill(queen, { log: log, debug: log});
 
 	thrill.on("test", function(test){
 		createReporter(test);

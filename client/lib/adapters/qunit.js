@@ -90,7 +90,7 @@
 		// When a test block ends
 		qunit.testDone(function(details) {
 			var timeElapsed = new Date().getTime() - testStartTime;
-			console.log(details);
+			
 			socket([MESSAGE_TYPE["test end"], {
 				name: details.name,
 				suite: details.module,

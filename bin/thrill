@@ -62,9 +62,7 @@ var startThrill = function(config){
 	};
 };
 
-app.version('0.1.2')
-	.option('-c, --config', "Use configuration file")
-	
+app.version('0.1.3')	
 
 app.command("*").action(function(configFilePath){
 	var config = {};
