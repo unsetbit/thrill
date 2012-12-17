@@ -1,0 +1,87 @@
+#!/usr/bin/env node
+
+var app = require('commander'),
+	path = require('path'),
+	vm = require('vm'),
+	utils = require('../lib/utils.js'),
+	fs = require('fs');
+
+
+var getExternalIpAddress = function(){
+	var interfaces = require('os').networkInterfaces();
+	var addresses = [];
+	utils.each(interfaces, function(interface, name){
+		addresses = addresses.concat(
+						utils.filter(interface, function(node){ 
+							return node.family === "IPv4" && node.internal === false;
+						})
+					);
+	});
+
+	if(addresses.length > 0){
+		return addresses[0].address;
+	}
+};
+
+var startThrill = function(config){
+	var createThrill = require('../').thrill,
+		createHttpServer = require('../').httpServer,
+		createReporter = require('../').reporter.unifiedDot,
+		createQueen = require('queen-remote').client;
+
+	createQueen(onReady, {
+		port: config.queenPort,
+		host: config.queenHost
+	});
+
+	var server = createHttpServer({
+		port: config.port,
+		host: config.host || getExternalIpAddress()
+	});
+
+	var scripts = server.serveFiles(config.scripts);
+
+	function onReady(queen){
+		var thrill = createThrill(queen);
+		
+		var test = thrill({
+			scripts: scripts, 
+			autoStart:false
+		});
+
+		var reporter = createReporter(test);
+		reporter.on('results', function(data){
+			if(test.passed){
+				process.exit(0);
+			} else {
+				process.exit(2);
+			}
+		});
+
+		test.start();
+	};
+};
+
+app.version('0.1.2')
+	.option('-c, --config', "Use configuration file")
+	
+
+app.command("*").action(function(configFilePath){
+	var config = {};
+	try {
+		vm.runInNewContext(fs.readFileSync(configFilePath), config);
+	} catch(e) {
+		if (e.name === 'SyntaxError') {
+		  console.error('Syntax error in config file!\n' + e.message);
+		} else if (e.code === 'ENOENT' || e.code === 'EISDIR') {
+		  console.error('Config file does not exist!');
+		} else {
+		  console.error('Invalid config file!\n', e);
+		}
+
+		process.exit(1);
+	}
+	startThrill(config);
+});
+
+app.parse(process.argv);

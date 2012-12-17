@@ -1,4 +1,14 @@
 (function(env){
+	var MESSAGE_TYPE = {
+		"start": 1, // [1]
+		"done": 2, // [2, PASSED]
+		"suite start": 3, // [3]
+		"suite end": 4, // [4]
+		"test start": 5, // [5]
+		"test end": 6 // [6]
+	};
+
+
 	var adaptQUnitToThrill = function(socket, qunit) {
 		var testStartTime, 
 			testLogMessages;
@@ -48,22 +58,22 @@
 
 		// When test suite begins
 		qunit.begin(function(){
-			socket.emit("start");
+			socket([MESSAGE_TYPE["start"]]);
 		});
 
 		// When module starts
 		qunit.moduleStart(function(details){
-			socket.emit("suiteStart", {
+			socket([MESSAGE_TYPE["suite start"], {
 				name: details.name
-			});
+			}]);
 		});
 
 		// When a test block begins
 		qunit.testStart(function(details) {
-			socket.emit("testStart", {
+			socket([MESSAGE_TYPE["test start"], {
 				name : details.name,
 				suite : details.module,
-			});
+			}]);
 
 			testStartTime = new Date().getTime();
 			testLogMessages = [];
@@ -80,37 +90,36 @@
 		// When a test block ends
 		qunit.testDone(function(details) {
 			var timeElapsed = new Date().getTime() - testStartTime;
-			console.log("test", details);
-			socket.emit("testEnd", {
+			console.log(details);
+			socket([MESSAGE_TYPE["test end"], {
 				name: details.name,
 				suite: details.module,
 				runtime: timeElapsed,
 				passCount: details.passed,
 				failCount: details.failed,
 				log: testLogMessages.join('\n')
-			});
+			}]);
 		});
 
 		// When a module ends
 		qunit.moduleDone(function(details){
-			console.log("module", details);
-			socket.emit("suiteEnd", {
+			socket([MESSAGE_TYPE["suite end"], {
 				name: details.name,
 				failCount: details.failed,
 				passCount: details.passed,
 				totalCount: details.total
-			});
+			}]);
 		});
 
 		// When a test suite ends
 		qunit.done(function(details) {
-			socket.emit("done", {
+			socket([MESSAGE_TYPE["done"], {
 				failCount: details.failed,
 				passCount: details.passed,
 				total: details.total,
 				runtime: details.runtime,
 				passed: details.failed === 0
-			});
+			}]);
 			
 			// Clean up
 			testCount = null;
@@ -119,7 +128,7 @@
 		});
 	};
 
-	adaptQUnitToThrill(env.workerSocket, env.QUnit);
+	adaptQUnitToThrill(env.socket, env.QUnit);
 
 // get at whatever the global object is, like window in browsers
 }( (function() {return this;}.call()) ));
