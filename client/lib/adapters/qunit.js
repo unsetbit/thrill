@@ -72,7 +72,7 @@
 		qunit.testStart(function(details) {
 			socket([MESSAGE_TYPE["test start"], {
 				name : details.name,
-				suite : details.module,
+				suite : details.module
 			}]);
 
 			testStartTime = new Date().getTime();

@@ -5,4 +5,5 @@ var scripts = [
 	"https://raw.github.com/jquery/qunit/master/test/test.js"
 ];
 
-queenHost = "192.168.0.105";
+queenHost = "d-45328p1.turn.corp";
+timeout = 1000;

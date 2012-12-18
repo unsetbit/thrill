@@ -6,9 +6,9 @@ var app = require('commander'),
 	utils = require('../lib/utils.js'),
 	fs = require('fs');
 
-
 var getExternalIpAddress = function(){
 	var interfaces = require('os').networkInterfaces();
+
 	var addresses = [];
 	utils.each(interfaces, function(interface, name){
 		addresses = addresses.concat(
@@ -26,26 +26,22 @@ var getExternalIpAddress = function(){
 var startThrill = function(config){
 	var createThrill = require('../').thrill,
 		createHttpServer = require('../').httpServer,
-		createReporter = require('../').reporter.unifiedDot,
-		createQueen = require('queen-remote').client;
-
-	createQueen(onReady, {
-		port: config.queenPort,
-		host: config.queenHost
-	});
-
+		createReporter = require('../').reporter.unifiedDot;
+	
 	var server = createHttpServer({
 		port: config.port,
 		host: config.host || getExternalIpAddress()
 	});
-
+	
 	var scripts = server.serveFiles(config.scripts);
+	
+	createThrill(onReady);
 
-	function onReady(queen){
-		var thrill = createThrill(queen);
-		
+	function onReady(thrill){
 		var test = thrill({
 			scripts: scripts, 
+			filter: config.filter,
+			timeout: config.timeout,
 			autoStart:false
 		});
 
