@@ -10,9 +10,8 @@ var JSHINT_NODE = {
 };
 
 module.exports = function(grunt) {
-  //grunt.loadNpmTasks('grunt-thrill');
-  grunt.loadTasks('../grunt-thrill/tasks');
-
+  grunt.loadNpmTasks('grunt-thrill');
+  
   // Project configuration.
   grunt.initConfig({
     pkg: '<json:package.json>',
