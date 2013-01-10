@@ -1,96 +1,12 @@
 #!/usr/bin/env node
-
 var app = require('commander'),
-	path = require('path'),
 	vm = require('vm'),
-	utils = require('../lib/utils.js'),
-	fs = require('fs');
-
-var getExternalIpAddress = function(){
-	var interfaces = require('os').networkInterfaces();
-
-	var addresses = [];
-	utils.each(interfaces, function(interface, name){
-		addresses = addresses.concat(
-						utils.filter(interface, function(node){ 
-							return node.family === "IPv4" && node.internal === false;
-						})
-					);
-	});
-
-	if(addresses.length > 0){
-		return addresses[0].address;
-	}
-};
-
-var startThrill = function(config){
-	var createThrill = require('../').thrill,
-		createHttpServer = require('../').httpServer,
-		createReporter = require('../').reporter.unifiedDot,
-		run = config.run,
-		verbose = config.verbose,
-		runHtml,
-		pathMap = config.serve || {};
-	
-	if(!run) throw Error('Run variable must be defined.');
-
-	function onServerReady(server){
-		var served = server.serve(pathMap, run);
-		
-		if(runHtml){
-			runHtml = runHtml.replace(/(<head.*>)/,'$1' + '<base href="' + served.runUrls + '"></base>');
-		}
-
-		createThrill(onReady, {
-			queenPort: config.queenPort,
-			queenHost: config.queenHost
-		});
-
-		function onReady(thrill){
-			var thrillConfig = {
-				run: runHtml || served.runUrls,
-				filter: config.filter,
-				timeout: config.timeout,
-				autoStart:false
-			};
-
-			var test = thrill(thrillConfig);
-
-			var reporter = createReporter(test);
-			reporter.on('results', function(data){
-				if(test.passed){
-					process.exit(0);
-				} else {
-					process.exit(2);
-				}
-			});
-
-			test.start();
-		};
-	}
-
-	function createServer(){
-		var server = createHttpServer(onServerReady, {
-			port: config.port,
-			host: config.host || getExternalIpAddress(),
-			log: verbose && console.log.bind(console)
-		});	
-	}
-
-	if(typeof run === "string" && !~run.indexOf('.js')){
-		fs.readFile(run, function(err, data){
-			if(err) throw err;
-			runHtml = data.toString();
-			createServer();
-		});
-	} else {
-		createServer();
-	}
-};
+	fs = require('fs'),
+	thrillRunner = require('../').runner;
 
 app.version('0.1.3')	
 
-var filePath = './thrill.js';
+var filePath = './thrill.js'; // By default
 app.command("*").action(function(configFilePath){
 	filePath = configFilePath;
 });
@@ -112,5 +28,5 @@ app.parse(process.argv);
 
 		process.exit(1);
 	}
-	startThrill(config);
+	thrillRunner(config);
 }());

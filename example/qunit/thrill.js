@@ -6,6 +6,6 @@ var serve = {
 
 var run = './index.html';
 
-queenHost = "192.168.0.100";
+host = "192.168.0.100";
 timeout = 10 * 1000;
 //verbose = true;

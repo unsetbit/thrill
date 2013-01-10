@@ -10,6 +10,9 @@ var JSHINT_NODE = {
 };
 
 module.exports = function(grunt) {
+  //grunt.loadNpmTasks('grunt-thrill');
+  grunt.loadTasks('../grunt-thrill/tasks');
+  
   // Project configuration.
   grunt.initConfig({
     pkg: '<json:package.json>',
@@ -35,6 +38,18 @@ module.exports = function(grunt) {
       dist: {
         src: ['<banner:meta.banner>', '<config:concat.dist.dest>'],
         dest: 'client/static/<%= pkg.name %>.min.js'
+      }
+    },
+    thrill: {
+      qunit: {
+        run: './example/qunit/index.html',
+        serve: {
+          'qunit.js': './client/lib/qunit.js',
+          'qunit-adapter.js': './client/lib/adapters/qunit.js',
+          '': './example/qunit/'
+        },
+        queenHost: "192.168.0.100",
+        timeout: 10 * 1000
       }
     },
     lint: {
