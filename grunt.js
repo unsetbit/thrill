@@ -12,7 +12,7 @@ var JSHINT_NODE = {
 module.exports = function(grunt) {
   //grunt.loadNpmTasks('grunt-thrill');
   grunt.loadTasks('../grunt-thrill/tasks');
-  
+
   // Project configuration.
   grunt.initConfig({
     pkg: '<json:package.json>',
@@ -48,7 +48,7 @@ module.exports = function(grunt) {
           'qunit-adapter.js': './client/lib/adapters/qunit.js',
           '': './example/qunit/'
         },
-        queenHost: "192.168.0.100",
+        host: "192.168.0.100",
         timeout: 10 * 1000
       }
     },

@@ -9,3 +9,4 @@ var run = './index.html';
 host = "192.168.0.100";
 timeout = 10 * 1000;
 //verbose = true;
+//quiet = true;
