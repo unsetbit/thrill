@@ -8,26 +8,10 @@
 		"test end": 6 // [6]
 	};
 
-
 	var adaptQUnitToThrill = function(socket, qunit) {
 		var testStartTime, 
 			testLogMessages;
 			qunit = qunit || env.QUnit;
-		
-		// QUnit requires a specific div for some of it's testing magic
-		var injectQUnitFixture = function() {
-			var body = document.getElementsByTagName('body')[0],
-				div;
-			div = document.createElement('div');
-			div.id = "qunit";
-			body.appendChild(div);
-
-			div = document.createElement('div');
-			div.id = "qunit-fixture";
-			body.appendChild(div);
-		};
-		injectQUnitFixture();
-
 
 		// A helper to provide nice error messages
 		//
@@ -127,8 +111,8 @@
 			testLogMessages = null;
 		});
 	};
-
-	adaptQUnitToThrill(env.socket, env.QUnit);
+	
+	adaptQUnitToThrill(env.queenSocket, env.QUnit);
 
 // get at whatever the global object is, like window in browsers
 }( (function() {return this;}.call()) ));

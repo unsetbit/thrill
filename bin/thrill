@@ -26,44 +26,81 @@ var getExternalIpAddress = function(){
 var startThrill = function(config){
 	var createThrill = require('../').thrill,
 		createHttpServer = require('../').httpServer,
-		createReporter = require('../').reporter.unifiedDot;
+		createReporter = require('../').reporter.unifiedDot,
+		run = config.run,
+		verbose = config.verbose,
+		runHtml,
+		pathMap = config.serve || {};
 	
-	var server = createHttpServer({
-		port: config.port,
-		host: config.host || getExternalIpAddress()
-	});
-	
-	var scripts = server.serveFiles(config.scripts);
-	
-	createThrill(onReady);
+	if(!run) throw Error('Run variable must be defined.');
 
-	function onReady(thrill){
-		var test = thrill({
-			scripts: scripts, 
-			filter: config.filter,
-			timeout: config.timeout,
-			autoStart:false
+	function onServerReady(server){
+		var served = server.serve(pathMap, run);
+		
+		if(runHtml){
+			runHtml = runHtml.replace(/(<head.*>)/,'$1' + '<base href="' + served.runUrls + '"></base>');
+		}
+
+		createThrill(onReady, {
+			queenPort: config.queenPort,
+			queenHost: config.queenHost
 		});
 
-		var reporter = createReporter(test);
-		reporter.on('results', function(data){
-			if(test.passed){
-				process.exit(0);
-			} else {
-				process.exit(2);
-			}
-		});
+		function onReady(thrill){
+			var thrillConfig = {
+				run: runHtml || served.runUrls,
+				filter: config.filter,
+				timeout: config.timeout,
+				autoStart:false
+			};
 
-		test.start();
-	};
+			var test = thrill(thrillConfig);
+
+			var reporter = createReporter(test);
+			reporter.on('results', function(data){
+				if(test.passed){
+					process.exit(0);
+				} else {
+					process.exit(2);
+				}
+			});
+
+			test.start();
+		};
+	}
+
+	function createServer(){
+		var server = createHttpServer(onServerReady, {
+			port: config.port,
+			host: config.host || getExternalIpAddress(),
+			log: verbose && console.log.bind(console)
+		});	
+	}
+
+	if(typeof run === "string" && !~run.indexOf('.js')){
+		fs.readFile(run, function(err, data){
+			if(err) throw err;
+			runHtml = data.toString();
+			createServer();
+		});
+	} else {
+		createServer();
+	}
 };
 
 app.version('0.1.3')	
 
+var filePath = './thrill.js';
 app.command("*").action(function(configFilePath){
+	filePath = configFilePath;
+});
+
+app.parse(process.argv);
+
+(function(){
 	var config = {};
 	try {
-		vm.runInNewContext(fs.readFileSync(configFilePath), config);
+		vm.runInNewContext(fs.readFileSync(filePath), config);
 	} catch(e) {
 		if (e.name === 'SyntaxError') {
 		  console.error('Syntax error in config file!\n' + e.message);
@@ -76,6 +113,4 @@ app.command("*").action(function(configFilePath){
 		process.exit(1);
 	}
 	startThrill(config);
-});
-
-app.parse(process.argv);
+}());
