@@ -10,7 +10,7 @@ test("expect in test", 3, function() {
 });
 
 test("expect in test", 1, function() {
-	ok(true);
+	ok(false);
 });
 
 test("expect query and multiple issue", function() {

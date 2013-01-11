@@ -1,4 +1,4 @@
-(function(env){
+(function(){
 	var MESSAGE_TYPE = {
 		"start": 1, // [1]
 		"done": 2, // [2, PASSED]
@@ -8,17 +8,17 @@
 		"test end": 6 // [6]
 	};
 
-	var adaptQUnitToThrill = function(socket, qunit) {
+	function adaptQUnitToThrill(qunit, socket) {
 		var testStartTime, 
 			testLogMessages;
-			qunit = qunit || env.QUnit;
+			qunit = qunit || window.QUnit;
 
 		// A helper to provide nice error messages
 		//
 		// Details param is the callback object from QUnit's log event
 		// which is fired for each assertion
-		var formatFailMessage = function(details) {
-			var message = details.message, trace;
+		var formatError = function(details) {
+			var message = details.message;
 
 			if (details.result) {
 				return message;
@@ -29,12 +29,31 @@
 			}
 
 			if (details.source) {
-				trace = details.source;
+				var cleanStack,
+					stack,
+					index = 0,
+					length;
 
-				// Remove qunit.js calls
-				trace = trace.replace(/\n.+qunit\.js\?\d*\:.+(?=(\n|$))/g, '');
+				cleanStack = [];
+				stack = details.source;
 
-				message += "\n" + trace;
+				stack = stack.split(/\n/g);
+				length = stack.length;
+				for(; index < length; index++){
+					line = stack[index];
+					if(~line.indexOf('/qunit.js'))	continue;
+
+					// Remove the proxy junk
+					line = line.replace(/\(.*\/g\/.*?\//,'(');
+					
+					// Remove the socket id from the main page
+					line = line.replace(/\?queenSocketId=([\w-])*/,'');
+
+					cleanStack.push(line);
+				}
+
+				// remove mocha stack entries
+				message += "\n" + cleanStack.join('\n');
 			}
 
 			return message;
@@ -67,7 +86,7 @@
 		qunit.log(function(details) {
 			// If the assertion failed, record it's message and trace
 			if (!details.result) {
-				testLogMessages.push(formatFailMessage(details));
+				testLogMessages.push(formatError(details));
 			}
 		});
 
@@ -112,17 +131,11 @@
 		});
 	};
 
-	var getParam = function(name){
-		name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
-		var regexS = "[\\?&]" + name + "=([^&#]*)";
-		var regex = new RegExp(regexS);
-		var results = regex.exec(window.location.search);
-		if(results == null)	return "";
-		else return decodeURIComponent(results[1].replace(/\+/g, " "));
+	var results = window.location.search.match(/(?:\?|\&)queenSocketId=(.*)(?:\&|$)/);
+	if(!results){
+		throw new Exception('Unable to find queen socket id in the url.');
 	}
-	var queenSocket = window.parent.iframeSockets[getParam("queenSocketId")];
+	var queenSocket = window.parent.iframeSockets[results[1]];
 	
-	adaptQUnitToThrill(queenSocket, env.QUnit);
-
-// get at whatever the global object is, like window in browsers
-}( (function() {return this;}.call()) ));
+	adaptQUnitToThrill(QUnit, queenSocket);
+}());
