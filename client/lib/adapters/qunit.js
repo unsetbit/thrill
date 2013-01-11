@@ -111,8 +111,18 @@
 			testLogMessages = null;
 		});
 	};
+
+	var getParam = function(name){
+		name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+		var regexS = "[\\?&]" + name + "=([^&#]*)";
+		var regex = new RegExp(regexS);
+		var results = regex.exec(window.location.search);
+		if(results == null)	return "";
+		else return decodeURIComponent(results[1].replace(/\+/g, " "));
+	}
+	var queenSocket = window.parent.iframeSockets[getParam("queenSocketId")];
 	
-	adaptQUnitToThrill(env.queenSocket, env.QUnit);
+	adaptQUnitToThrill(queenSocket, env.QUnit);
 
 // get at whatever the global object is, like window in browsers
 }( (function() {return this;}.call()) ));
