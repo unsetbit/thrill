@@ -9,3 +9,8 @@ host = "192.168.0.100";
 timeout = 1000 * 1000;
 //verbose = true;
 //quiet = true;
+
+filter = function(browser){
+	// if(browser.family === "Chrome") return false;
+	return true;
+}

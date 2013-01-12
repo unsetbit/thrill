@@ -4,29 +4,51 @@ var app = require('commander'),
 	fs = require('fs'),
 	thrillRunner = require('../').runner;
 
-app.version('0.1.3')	
+app.version('0.3.0')	
 
-var filePath = './thrill.js'; // By default
-app.command("*").action(function(configFilePath){
-	filePath = configFilePath;
+app.option('-h, --host [host]', 'The host of the Queen server')
+	.option('-l, --library [library]', 'The testing library to use')
+	.option('-q, --quiet', 'Don\'t output anything to output stream')
+	.option('-v, --verbose', 'Whether to log verbosely');
+
+var config = {};
+
+var startThrill = true;
+app.command("init").action(function(){
+	startThrill = false;
+	console.log('INIT');
+});
+
+app.command("*").action(function(filePath){
+	var args = Array.prototype.slice.call(arguments, 0);
+	// Discard the last arg, which is commander
+	args.pop();
+	
+	// Heuristics: If more than one file, this is a run list, otherwise, we can't
+	// be sure.
+	if(args.length !== 1){
+		config.run = args;
+	} else {
+		config.file = filePath;
+	}
 });
 
 app.parse(process.argv);
 
-(function(){
-	var config = {};
-	try {
-		vm.runInNewContext(fs.readFileSync(filePath), config);
-	} catch(e) {
-		if (e.name === 'SyntaxError') {
-		  console.error('Syntax error in config file!\n' + e.message);
-		} else if (e.code === 'ENOENT' || e.code === 'EISDIR') {
-		  console.error('Config file does not exist!');
-		} else {
-		  console.error('Invalid config file!\n', e);
-		}
+config.host = app.host;
+config.quiet = app.quiet;
+config.verbose = app.verbose;
+config.library = app.library;
 
-		process.exit(1);
-	}
-	thrillRunner(config);
-}());
+if(startThrill){
+	// Set the default config file
+	if(!config.run && !config.file) config.file = 'thrill.js';
+
+	thrillRunner(config, function(results){
+		if(results.passed){
+			process.exit(0);
+		} else {
+			process.exit(1);
+		}
+	});	
+}
