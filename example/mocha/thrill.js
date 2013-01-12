@@ -1,7 +1,7 @@
 var serve = {
 	'lib/mocha.js': 'mocha.js',
 	'lib/mocha.css': 'mocha.css',
-	'lib/mocha-adapter.js': '../../client/lib/adapters/mocha.js',
+	'lib/mocha-adapter.js': '../../dist/thrill-mocha-adapter.js',
 	'': './test'
 };
 

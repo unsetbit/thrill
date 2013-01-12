@@ -15,7 +15,9 @@
     "winston": "~0.6.2"
   },
   "devDependencies": {
-    "grunt-thrill": "~0.2.0"
+    "grunt-thrill": "~0.2.0",
+    "grunt-hug": "~0.3.2",
+    "grunt-contrib-clean": "~0.3.1"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

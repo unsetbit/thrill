@@ -1,42 +1,56 @@
-// JS Hint options
-var JSHINT_BROWSER = {
-  browser: true,
-  es5: true
-};
+var ADAPTER_LIBRARIES = ['qunit','jasmine','mocha'];
 
-var JSHINT_NODE = {
-  node: true,
-  es5: true
-};
+function addAdapterLibrariesToConfig(libraries, config){
+  libraries.forEach(function(name){
+    if(!("hug" in config)) config.hug = {};
+    if(!("min" in config)) config.min = {};
+
+    var adapterDest = 'build/thrill-' + name + '-adapter.js';
+
+    config.hug[name] = {
+        src: ['./lib/client/adapters/' + name + '.js', './lib/client/thrill.js'],
+        dest: adapterDest,
+        exports: './lib/client/adapters/' + name + '.js',
+        exportedVariable: 'thrill'
+    };
+    
+    config.min[name + "Adapter"] = {
+        src: ['<banner:meta.banner>', adapterDest],
+        dest: './dist/thrill-' + name + '-adapter.js'
+    };
+
+    config.min[name] = {
+       src: ['<banner:meta.banner>', './lib/client/lib/' + name + '.js', adapterDest],
+        dest: './dist/thrill-' + name + '.js'
+    };
+  });
+}
 
 module.exports = function(grunt) {
-  grunt.loadNpmTasks('grunt-thrill');
+  grunt.registerTask('default', 'clean lint hug min');
   
-  // Project configuration.
-  grunt.initConfig({
+  grunt.loadNpmTasks('grunt-thrill');
+  grunt.loadNpmTasks('grunt-hug');
+  grunt.loadNpmTasks('grunt-contrib-clean');
+
+  var config = {
     pkg: '<json:package.json>',
     files: {
-      server: ['server/lib/*.js'],
-      client: ['client/lib/*.js', 'client/build_resource/module_prefix.js', 'client/src/*.js', 'client/build_resource/module_postfix.js'],
+      server: ['server/lib/**/*.js'],
+      client: ['lib/client/*.js', 'lib/client/adapters/**/*.js'],
       grunt: ['grunt.js', 'tasks/*.js']
     },
     meta: {
       banner: '/*! <%= pkg.title || pkg.name %> - v<%= pkg.version %> - ' +
         '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
         '<%= pkg.homepage ? "* " + pkg.homepage + "\n" : "" %>' +
-        '* Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author %>;' +
+        '* Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>;' +
         ' Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %> */'
     },
-    concat: {
-      dist: {
-        src: ['<banner:meta.banner>', '<config:files.client>'],
-        dest: 'client/static/<%= pkg.name %>.js'
-      }
-    },
-    min: {
-      dist: {
-        src: ['<banner:meta.banner>', '<config:concat.dist.dest>'],
-        dest: 'client/static/<%= pkg.name %>.min.js'
+    watch: {
+      client: {
+        files: '<config:files.client>',
+        tasks: 'default'
       }
     },
     thrill: {
@@ -53,21 +67,25 @@ module.exports = function(grunt) {
     },
     lint: {
       server: '<config:files.server>',
-      client: '<config:files.client>',
-      grunt: '<config:files.grunt>'
+      client: '<config:files.client>'
     },
-
+    clean: {
+      build: ['./build'],
+      dist: ['./dist']
+    },
     jshint: {
-      server: {
-        options: JSHINT_NODE
-      },
-      grunt: {
-        options: JSHINT_NODE
-      },
       client: {
-        options: JSHINT_BROWSER
+        options: {
+          browser: true,
+          sub: true
+        }
       },
-
+      server: {
+        options: {
+          node: true,
+          sub: true
+        }
+      },
       options: {
         quotmark: 'single',
         camelcase: true,
@@ -79,13 +97,16 @@ module.exports = function(grunt) {
         latedef: true,
         newcap: true,
         noarg: true,
-        sub: true,
         undef: true,
-        boss: true
+        boss: true,
+        sub: true
       },
-      globals: {}
+      globals: {      }
     }
-  });
+  };
 
-  grunt.registerTask('default', 'concat min');
+  addAdapterLibrariesToConfig(ADAPTER_LIBRARIES, config);
+
+  // Project configuration.
+  grunt.initConfig(config);
 };
