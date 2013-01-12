@@ -8,7 +8,7 @@ function addAdapterLibrariesToConfig(libraries, config){
     var adapterDest = 'build/thrill-' + name + '-adapter.js';
 
     config.hug[name] = {
-        src: ['./lib/client/adapters/' + name + '.js', './lib/client/thrill.js'],
+        src: ['./lib/client/adapters/' + name + '.js'],
         dest: adapterDest,
         exports: './lib/client/adapters/' + name + '.js',
         exportedVariable: 'thrill'
@@ -63,6 +63,20 @@ module.exports = function(grunt) {
         },
         host: "192.168.0.100",
         timeout: 10 * 1000
+      }
+    },
+    hug: {
+      thrill: {
+        src: ['./lib/client/thrill.js'],
+        dest: './build/thrill.js',
+        exports: './lib/client/thrill.js',
+        exportedVariable: 'thrill'
+      }
+    },
+    min: {
+      thrill: {
+        src: "<config:hug.thrill.dest>",
+        dest: "./dist/thrill.js"
       }
     },
     lint: {
