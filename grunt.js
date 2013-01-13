@@ -28,8 +28,7 @@ function addAdapterLibrariesToConfig(libraries, config){
 
 module.exports = function(grunt) {
   grunt.registerTask('default', 'clean lint hug min');
-  grunt.loadTasks('../grunt-thrill/tasks');
-  //grunt.loadNpmTasks('grunt-thrill');
+  grunt.loadNpmTasks('grunt-thrill');
   grunt.loadNpmTasks('grunt-hug');
   grunt.loadNpmTasks('grunt-contrib-clean');
 
