@@ -38,7 +38,7 @@ module.exports = function(grunt) {
       server: ['lib/server/**/*.js'],
       client: ['lib/client/*.js', 'lib/client/adapters/**/*.js'],
       test: {
-        server: ['']
+        server: ['test/server/**/*.js']
       }
     },
     meta: {
