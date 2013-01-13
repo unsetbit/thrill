@@ -28,8 +28,8 @@ function addAdapterLibrariesToConfig(libraries, config){
 
 module.exports = function(grunt) {
   grunt.registerTask('default', 'clean lint hug min');
-  
-  grunt.loadNpmTasks('grunt-thrill');
+  grunt.loadTasks('../grunt-thrill/tasks');
+  //grunt.loadNpmTasks('grunt-thrill');
   grunt.loadNpmTasks('grunt-hug');
   grunt.loadNpmTasks('grunt-contrib-clean');
 
@@ -54,13 +54,9 @@ module.exports = function(grunt) {
       }
     },
     thrill: {
-      qunit: {
-        run: './example/qunit/index.html',
-        serve: {
-          'qunit.js': './client/lib/qunit.js',
-          'qunit-adapter.js': './client/lib/adapters/qunit.js',
-          '': './example/qunit/'
-        },
+      basic: {
+        run: './example/basic/test*.js',
+        library: "qunit",
         host: "192.168.0.100",
         timeout: 10 * 1000
       }
