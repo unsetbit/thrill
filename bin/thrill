@@ -8,6 +8,7 @@ app.version('0.3.0')
 
 app.option('-h, --host [host]', 'The host of the Queen server')
 	.option('-l, --library [library]', 'The testing library to use')
+	.option('--noAutoAdapt', 'Disable auto adapting of libraries')
 	.option('-q, --quiet', 'Don\'t output anything to output stream')
 	.option('-v, --verbose', 'Whether to log verbosely');
 
@@ -39,6 +40,7 @@ config.host = app.host;
 config.quiet = app.quiet;
 config.verbose = app.verbose;
 config.library = app.library;
+if(app.noAutoAdapt !== void 0) config.autoAdapt = !app.noAutoAdapt;
 
 if(startThrill){
 	// Set the default config file

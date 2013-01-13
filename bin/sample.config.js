@@ -86,12 +86,31 @@ GitHub wiki.
 library = "mocha";
 /* Use:
 If you define a testing library, thrill will automatically prepend
-it's copy to the list of run files. If you've defined an HTML
-run file, Thrill will automatically add the nescessary adapter
-when the HTML file is being served.
+it's copy to the list of run files. If you running an HTML file, this
+option has no effect (see autoAdapt).
 
 Supported values: mocha, qunit, jasmine
 */
+
+
+/* AUTO ADAPT LIBRARIES */
+autoAdapt = true;
+/* Use:
+When enabled, the http server will inspect each html-like file and if it finds
+an adaptable library script on the page. If it finds an adaptable library,
+such as qunit, jasmine, or mocha, and if it doesn't find an existing adapter,
+it will inject a Thrill adapter scipt in to the html page. This way, your test
+code doesn't have to be aware of the runner at all.
+*/
+
+/* AUTO ADAPT EXTENSIONS */
+autoAdaptExtensions = ['.html', '.htm'];
+/* Use:
+This options tells Thrill which file extensions to inspect for libraries to adapt.
+Since Thrill injects an html <script> tag, these extensions should be for files that
+are html-like.
+*/
+
 
 /* LOGGING */
 verbose = false;
