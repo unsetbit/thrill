@@ -35,9 +35,11 @@ module.exports = function(grunt) {
   var config = {
     pkg: '<json:package.json>',
     files: {
-      server: ['server/lib/**/*.js'],
+      server: ['lib/server/**/*.js'],
       client: ['lib/client/*.js', 'lib/client/adapters/**/*.js'],
-      grunt: ['grunt.js', 'tasks/*.js']
+      test: {
+        server: ['']
+      }
     },
     meta: {
       banner: '/*! <%= pkg.title || pkg.name %> - v<%= pkg.version %> - ' +
@@ -82,6 +84,9 @@ module.exports = function(grunt) {
       build: ['./build'],
       dist: ['./dist']
     },
+    test: {
+      lib: '<config:files.test.server>'
+    },
     jshint: {
       client: {
         options: {
@@ -92,7 +97,8 @@ module.exports = function(grunt) {
       server: {
         options: {
           node: true,
-          sub: true
+          sub: true,
+          strict: false
         }
       },
       options: {
