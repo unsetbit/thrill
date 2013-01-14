@@ -24,7 +24,7 @@ utils.each(commandHandlerConfig, function(filePath, command){
 app.version('0.3.0')	
 
 app.option('-h, --host [host]', 'The host of the Queen server')
-	.option('-l, --library [library]', 'The testing library to use')
+	.option('-s, --serve [serve]', 'The directory to serve as the base path')
 	.option('--noAutoAdapt', 'Disable auto adapting of libraries')
 	.option('-q, --quiet', 'Don\'t output anything to output stream')
 	.option('-v, --verbose', 'Whether to log verbosely');
@@ -65,6 +65,7 @@ config.quiet = app.quiet;
 config.verbose = app.verbose;
 
 if(app.noAutoAdapt !== void 0) config.autoAdapt = !app.noAutoAdapt;
+if(app.serve !== void 0) config.serve = app.serve;
 
 // Set the default config file
 if(!config.run && !config.file) config.file = 'thrill.js';

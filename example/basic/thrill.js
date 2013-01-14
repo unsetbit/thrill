@@ -1,5 +1,5 @@
 run = [
-	"qunit.js",
+	"../qunit.js",
 	"test1.js", 
 	"test2.js"
 ];
