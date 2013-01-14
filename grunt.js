@@ -8,20 +8,15 @@ function addAdapterLibrariesToConfig(libraries, config){
     var adapterDest = 'build/thrill-' + name + '-adapter.js';
 
     config.hug[name] = {
-        src: ['./lib/client/adapters/' + name + '.js'],
+        src: ['./lib/client/adapter/' + name + '.js'],
         dest: adapterDest,
-        exports: './lib/client/adapters/' + name + '.js',
+        exports: './lib/client/adapter/' + name + '.js',
         exportedVariable: 'thrill'
     };
     
     config.min[name + "Adapter"] = {
         src: ['<banner:meta.banner>', adapterDest],
         dest: './dist/thrill-' + name + '-adapter.js'
-    };
-
-    config.min[name] = {
-       src: ['<banner:meta.banner>', './lib/client/lib/' + name + '.js', adapterDest],
-        dest: './dist/thrill-' + name + '.js'
     };
   });
 }
@@ -36,7 +31,7 @@ module.exports = function(grunt) {
     pkg: '<json:package.json>',
     files: {
       server: ['lib/server/**/*.js'],
-      client: ['lib/client/*.js', 'lib/client/adapters/**/*.js'],
+      client: ['lib/client/*.js', 'lib/client/adapter/**/*.js'],
       test: {
         server: ['test/server/**/*.js']
       }

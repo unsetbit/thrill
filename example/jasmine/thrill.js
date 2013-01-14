@@ -1,16 +1,6 @@
-var serve = {
-	'thrill-jasmine-adapter.js': '../../dist/thrill-jasmine-adapter.js',
-	'': '../../../jasmine'
-};
-
-var run = 'spec/runner.html';
+var serve = '../../../jasmine';
+var run = '../../../jasmine/spec/runner.html';
 
 host = "192.168.0.100";
 timeout = 1000 * 1000;
-//verbose = true;
-//quiet = true;
-
-filter = function(browser){
-	// if(browser.family === "Chrome") return false;
-	return true;
-}
+stream = true;

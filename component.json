@@ -1,0 +1,5 @@
+{
+  "name": "thrill",
+  "version": "0.3.0",
+  "main": "./dist/thrill.js"
+}

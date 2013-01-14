@@ -1,8 +1,25 @@
 #!/usr/bin/env node
+
 var app = require('commander'),
 	vm = require('vm'),
+	path = require('path'),
 	fs = require('fs'),
-	thrillRunner = require('../').runner;
+	utils = require('../lib/utils.js'),
+	thrillRunner = require('../').runner,
+	configDir = require('../').configDir,
+	commandHandlerConfig = require(configDir + '/commands.json'),
+	commandHandlers = {};
+
+// RESOLVE COMMAND PATHS
+utils.each(commandHandlerConfig, function(filePath, command){
+	if(filePath[0] === '.') filePath = path.resolve(configDir, filePath);
+	try{
+		commandHandlers[command] = filePath;
+	} catch(e){
+		console.log('Error in importing command: ' + command);
+		console.log(e);
+	}
+});
 
 app.version('0.3.0')	
 
@@ -12,14 +29,19 @@ app.option('-h, --host [host]', 'The host of the Queen server')
 	.option('-q, --quiet', 'Don\'t output anything to output stream')
 	.option('-v, --verbose', 'Whether to log verbosely');
 
-var config = {};
-
 var startThrill = true;
-app.command("init").action(function(){
-	startThrill = false;
-	console.log('INIT');
+
+// Overwrite any command handler, that's one thing we can't overwrite
+commandHandlers["command"] = "./command/command.js";
+utils.each(commandHandlers, function(handlerFilePath, command){
+	app.command(command).action(function(){
+		var handler = require(handlerFilePath);
+		handler.apply(void 0, arguments);
+		startThrill = false;	
+	});
 });
 
+var config = {};
 app.command("*").action(function(filePath){
 	var args = Array.prototype.slice.call(arguments, 0);
 	// Discard the last arg, which is commander
@@ -36,21 +58,21 @@ app.command("*").action(function(filePath){
 
 app.parse(process.argv);
 
+if(!startThrill) return;
+
 config.host = app.host;
 config.quiet = app.quiet;
 config.verbose = app.verbose;
-config.library = app.library;
+
 if(app.noAutoAdapt !== void 0) config.autoAdapt = !app.noAutoAdapt;
 
-if(startThrill){
-	// Set the default config file
-	if(!config.run && !config.file) config.file = 'thrill.js';
+// Set the default config file
+if(!config.run && !config.file) config.file = 'thrill.js';
 
-	thrillRunner(config, function(results){
-		if(results.passed){
-			process.exit(0);
-		} else {
-			process.exit(1);
-		}
-	});	
-}
+thrillRunner(config, function(results){
+	if(results.passed){
+		process.exit(0);
+	} else {
+		process.exit(1);
+	}
+});
