@@ -34,6 +34,20 @@ module.exports = function(grunt) {
       server: ['lib/server/**/*.js'],
       client: ['lib/client/*.js', 'lib/client/adapter/**/*.js'],
       test: {
+        client: {
+          qunit: [
+            'test/resource/qunit.js',
+            'test/client/qunit.js'
+          ],
+          jasmine: [
+            'test/resource/jasmine.js',
+            'test/client/jasmine.js'
+          ],
+          mocha: [
+            'test/resource/mocha.js',
+            'test/client/mocha.js'
+          ]
+        },
         server: ['test/server/**/*.js']
       }
     },
@@ -51,6 +65,16 @@ module.exports = function(grunt) {
       }
     },
     thrill: {
+      qunit: {
+        run: '<config:files.test.client.qunit>'
+      },
+      jasmine: {
+        run: '<config:files.test.client.jasmine>'
+      },
+      mocha: {
+        run: '<config:files.test.client.mocha>'
+      }
+      /* EXAMPLE RUNNERS 
       scriptOnly: './example/scriptOnly/thrill.js',
       scriptOnlyAlternate: {
         file: './example/scriptOnly/thrill.js',
@@ -60,7 +84,7 @@ module.exports = function(grunt) {
       scriptOnlyAlternate2: {
         run: ['./example/qunit.js', './example/scriptOnly/test*.js'],
         host: 'localhost'
-      }
+      }*/
     },
     hug: {
       thrill: {
