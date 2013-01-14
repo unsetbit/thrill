@@ -25,6 +25,7 @@ app.version('0.3.0')
 
 app.option('-h, --host [host]', 'The host of the Queen server')
 	.option('-s, --serve [serve]', 'The directory to serve as the base path for')
+	.option('-r, --reporter [reporter]', 'Set the reporter')
 	.option('--noAutoAdapt', 'Disable auto adapting of libraries')
 	.option('-q, --quiet', 'Don\'t output anything to output stream')
 	.option('-v, --verbose', 'Whether to log verbosely');
@@ -63,7 +64,7 @@ if(!startThrill) return;
 config.host = app.host;
 config.quiet = app.quiet;
 config.verbose = app.verbose;
-
+config.reporter = app.reporter;
 if(app.noAutoAdapt !== void 0) config.autoAdapt = !app.noAutoAdapt;
 if(app.serve !== void 0) config.serve = app.serve;
 

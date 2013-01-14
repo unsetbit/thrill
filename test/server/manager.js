@@ -2,13 +2,13 @@ var sinon = require('sinon'),
 	mocks = require('mocks'),
 	path = require('path'),
 	EventEmitter = require('events').EventEmitter,
-	theModule = mocks.loadFile(path.resolve(path.dirname(module.filename), '../../lib/server/test.js'),
+	theModule = mocks.loadFile(path.resolve(path.dirname(module.filename), '../../lib/server/manager.js'),
 		{
 			'./tester.js': { create: createMockTester }
 		}
 	);
 
-var Test = theModule.Test;
+var Manager = theModule.Manager;
 
 function createMockTester(worker){
 	mock = {};
@@ -38,7 +38,7 @@ function createMockWorkforce(){
 exports.test = {
 	setUp: function(callback){
 		this.workforce = createMockWorkforce();
-		this.t = new Test(this.workforce.api);
+		this.t = new Manager(this.workforce.api);
 		callback();
 	},
 	construct: function(test){
@@ -46,15 +46,15 @@ exports.test = {
 		test.throws(function(){t = theModule.create()}, "Able to construct with missing required params");
 
 		var t = theModule.create(createMockWorkforce().api);
-		test.ok(t instanceof Test, "Unable to construct");		
+		test.ok(t instanceof Manager, "Unable to construct");		
 
 		test.done();
 	},
 	create: function(test){
-		test.throws(function(){new Test()}, "Able to construct with missing required params");
+		test.throws(function(){new Manager()}, "Able to construct with missing required params");
 
-		var t = new Test(createMockWorkforce().api);
-		test.ok(t instanceof Test, "Unable to construct");
+		var t = new Manager(createMockWorkforce().api);
+		test.ok(t instanceof Manager, "Unable to construct");
 		test.done();
 	},
 	workforceDeath: function(test){
@@ -62,7 +62,7 @@ exports.test = {
 		this.t.api.on('dead', spy);
 		this.workforce.emitter.emit('dead');
 
-		test.equals(spy.callCount, 1, "Test not killed when workforce died");
+		test.equals(spy.callCount, 1, "Manager not killed when workforce died");
 		test.done();
 	},
 	stopOnWorkforceDeath: function(test){
@@ -72,7 +72,7 @@ exports.test = {
 		this.t.started = true;
 		this.workforce.emitter.emit('dead');
 
-		test.equals(spy.callCount, 1, "Test not stopped when workforce died");	
+		test.equals(spy.callCount, 1, "Manager not stopped when workforce died");	
 		test.done();
 	},
 	start: function(test){

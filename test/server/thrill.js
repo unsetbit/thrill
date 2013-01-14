@@ -3,10 +3,10 @@ var sinon = require('sinon'),
 	path = require('path'),
 	EventEmitter = require('events').EventEmitter,
 	theModule = mocks.loadFile(path.resolve(path.dirname(module.filename), '../../lib/server/thrill.js'), {
-		'./test.js': { create: createMockTest }
+		'./manager.js': { create: createMockManager }
 	});
 
-function createMockTest(workforce){
+function createMockManager(workforce){
 	mock = {};
 	var emitter = mock.emitter = new EventEmitter();
 	mock.api = {};
@@ -70,56 +70,56 @@ exports.thrill = {
 		test.ok(t instanceof Thrill, "Unable to construct");
 		test.done();
 	},
-	getTest: function(test){
+	getManager: function(test){
 		var spy = sinon.spy();
-		this.thrill.api.on('test', spy);
+		this.thrill.api.on('manager', spy);
 		
-		var t = this.thrill.getTest({run : ""});
+		var t = this.thrill.getManager({run : ""});
 		
-		test.equals(spy.callCount, 1, "Test event not fired when test created");
+		test.equals(spy.callCount, 1, "Manager event not fired when test created");
 		
 		test.done();
 	},
-	killTestWhenNoWorkerProvider: function(test){
+	killManagerWhenNoWorkerProvider: function(test){
 		test.expect(1);
 		var spy = sinon.spy();
 
-		var t = this.thrill.getTest({run : ""});
+		var t = this.thrill.getManager({run : ""});
 		t.on('dead', spy);
 
 		
 		setTimeout(function(){
-			test.equals(spy.callCount, 1, "Test not killed when there were no worker providers");
+			test.equals(spy.callCount, 1, "Manager not killed when there were no worker providers");
 			test.done();	
 		},2);
 	},
-	dontKillTestWhenInManual: function(test){
+	dontKillManagerWhenInManual: function(test){
 		test.expect(1);
 		var spy = sinon.spy();
 
-		var t = this.thrill.getTest({
+		var t = this.thrill.getManager({
 			run : "",
 			populate: "manual"
 		});
 		t.on('dead', spy);
 		
 		setTimeout(function(){
-			test.equals(spy.callCount, 0, "Test not killed when there were no worker providers");
+			test.equals(spy.callCount, 0, "Manager not killed when there were no worker providers");
 			test.done();	
 		},2);
 	},
-	dontKillTestWhenInContinous: function(test){
+	dontKillManagerWhenInContinous: function(test){
 		test.expect(1);
 		var spy = sinon.spy();
 
-		var t = this.thrill.getTest({
+		var t = this.thrill.getManager({
 			run : "",
 			populate: "continuous"
 		});
 		t.on('dead', spy);
 		
 		setTimeout(function(){
-			test.equals(spy.callCount, 0, "Test not killed when there were no worker providers");
+			test.equals(spy.callCount, 0, "Manager not killed when there were no worker providers");
 			test.done();	
 		},2);
 	},
@@ -127,13 +127,13 @@ exports.thrill = {
 		test.expect(1);
 		var spy = sinon.spy();
 
-		var t = this.thrill.getTest({
+		var t = this.thrill.getManager({
 			run : ""
 		});
 		t.on('start', spy);
 		
 		setTimeout(function(){
-			test.equals(spy.callCount, 1, "Test not started by default");
+			test.equals(spy.callCount, 1, "Manager not started by default");
 			test.done();	
 		},2);
 	},
@@ -141,14 +141,14 @@ exports.thrill = {
 		test.expect(1);
 		var spy = sinon.spy();
 
-		var t = this.thrill.getTest({
+		var t = this.thrill.getManager({
 			run : "",
 			autoStart: false
 		});
 		t.on('start', spy);
 		
 		setTimeout(function(){
-			test.equals(spy.callCount, 0, "Test not started by default");
+			test.equals(spy.callCount, 0, "Manager not started by default");
 			test.done();	
 		},2);
 	},
@@ -156,14 +156,14 @@ exports.thrill = {
 		var spy = sinon.spy();
 
 		// create manual test that won't die automatically
-		var t = this.thrill.getTest({
+		var t = this.thrill.getManager({
 			run : "",
 			populate: "manual"
 		});
 
 		this.thrill.kill();
 
-		test.equals(t.kill.callCount, 1, "Test not killed when thrill died");
+		test.equals(t.kill.callCount, 1, "Manager not killed when thrill died");
 		test.equals(this.queen.kill.callCount, 1, "Queen not killed when thrill died.");
 
 		test.done();

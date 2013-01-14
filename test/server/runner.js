@@ -19,7 +19,7 @@ function createMockHttpServer(callback){
 	return mock;
 }
 
-function createMockTest(workforce){
+function createMockManager(workforce){
 	mock = {};
 	var emitter = mock.emitter = new EventEmitter();
 	mock.api = {};
@@ -27,6 +27,7 @@ function createMockTest(workforce){
 	mock.api.removeListener = sinon.spy(emitter.removeListener.bind(emitter));
 	mock.api.id = 1;
 	mock.kill = sinon.spy();
+	mock.api.start = sinon.spy();
 	mock.api.kill = mock.kill;
 	mock.start = sinon.spy(function(){emitter.emit('start')});
 	workforce.on('dead', function(){emitter.emit('dead');});
@@ -50,9 +51,9 @@ function createMockWorkforce(){
 }
 
 function createMockThrill(callback){
-	var test = createMockTest(createMockWorkforce().api);
-	var mock = sinon.stub().returns(test);
-	mock.test = test;
+	var manager = createMockManager(createMockWorkforce().api);
+	var mock = sinon.stub().returns(manager.api);
+	mock.manager = manager;
 	process.nextTick(function(){callback(mock)});
 	return mock;
 }

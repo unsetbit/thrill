@@ -1,0 +1,4 @@
+{
+	"dot": "../lib/server/reporter/dot.js",
+	"mocha": "../lib/server/reporter/mocha.js"
+}
