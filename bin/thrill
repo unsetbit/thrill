@@ -24,7 +24,7 @@ utils.each(commandHandlerConfig, function(filePath, command){
 app.version('0.3.0')	
 
 app.option('-h, --host [host]', 'The host of the Queen server')
-	.option('-s, --serve [serve]', 'The directory to serve as the base path')
+	.option('-s, --serve [serve]', 'The directory to serve as the base path for')
 	.option('--noAutoAdapt', 'Disable auto adapting of libraries')
 	.option('-q, --quiet', 'Don\'t output anything to output stream')
 	.option('-v, --verbose', 'Whether to log verbosely');
