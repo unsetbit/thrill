@@ -4,5 +4,4 @@ run = [
 	"test2.js"
 ];
 
-library = "qunit";
-host = "192.168.0.100";
+host = "localhost";

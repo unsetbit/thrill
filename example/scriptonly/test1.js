@@ -2,6 +2,6 @@ test("Pass", function() {
 	equal(1, 1);
 });
 
-test("Fail", function() {
-	equal(1, 0);
+test("Pass again", function() {
+	equal(2, 2);
 });
