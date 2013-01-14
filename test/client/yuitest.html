@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<title></title>
+
+	<script src="yahoo-dom-event.js"></script>
+	<script src="logger.js"></script>
+	<script src="yuitest.js"></script>
+	<script>
+		var suite = new YAHOO.tool.TestSuite("TestSuite Name");
+
+        suite.add( new YAHOO.tool.TestCase({
+            name: 'Test YUI with Thrill',
+            test_get: function() {
+                YAHOO.util.Assert.areEqual(1, 1, 'Always passes');
+            }
+        }));
+        
+        YAHOO.tool.TestRunner.add(suite);
+        YAHOO.tool.TestRunner.run();
+	</script>
+</head>
+<body>
+</body>
+</html>

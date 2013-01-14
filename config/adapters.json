@@ -1,5 +1,6 @@
 {
 	"qunit": "../dist/thrill-qunit-adapter.js",
 	"jasmine": "../dist/thrill-jasmine-adapter.js",
-	"mocha": "../dist/thrill-mocha-adapter.js"
+	"mocha": "../dist/thrill-mocha-adapter.js",
+	"yuitest": "../dist/thrill-yuitest-adapter.js"
 }

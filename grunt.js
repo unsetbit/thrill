@@ -1,23 +1,25 @@
-var ADAPTER_LIBRARIES = ['qunit','jasmine','mocha'];
+var utils = require('./lib/utils.js');
 
-function addAdapterLibrariesToConfig(libraries, config){
-  libraries.forEach(function(name){
-    if(!("hug" in config)) config.hug = {};
-    if(!("min" in config)) config.min = {};
+function addAdapterLibrariesToConfig(config){
+  var adapters = require('./').adapters;
 
-    var adapterDest = 'build/thrill-' + name + '-adapter.js';
+  utils.each(adapters, function(filePath, name){
+      if(!("hug" in config)) config.hug = {};
+      if(!("min" in config)) config.min = {};
 
-    config.hug[name] = {
-        src: ['./lib/client/adapter/' + name + '.js'],
-        dest: adapterDest,
-        exports: './lib/client/adapter/' + name + '.js',
-        exportedVariable: 'thrill'
-    };
-    
-    config.min[name + "Adapter"] = {
-        src: ['<banner:meta.banner>', adapterDest],
-        dest: './dist/thrill-' + name + '-adapter.js'
-    };
+      var adapterDest = 'build/thrill-' + name + '-adapter.js';
+      var adapterSrc = 'lib/client/adapter/' + name + '.js';
+      config.hug[name] = {
+          src: [adapterSrc],
+          dest: adapterDest,
+          exports: adapterSrc,
+          exportedVariable: 'thrill'
+      };
+      
+      config.min[name] = {
+          src: ['<banner:meta.banner>', adapterDest],
+          dest: './dist/thrill-' + name + '-adapter.js'
+      };
   });
 }
 
@@ -45,7 +47,8 @@ module.exports = function(grunt) {
           mocha: [
             'test/resource/mocha.js',
             'test/client/mocha.js'
-          ]
+          ],
+          yuitest: 'test/client/yuitest.html'
         },
         server: ['test/server/**/*.js']
       }
@@ -72,6 +75,11 @@ module.exports = function(grunt) {
       },
       mocha: {
         run: '<config:files.test.client.mocha>'
+      },
+      yuitest: {
+        run: '<config:files.test.client.yuitest>',
+        serve: 'test/resource/yuitest',
+        verbose: false
       }
       /* EXAMPLE RUNNERS 
       scriptOnly: './example/scriptOnly/thrill.js',
@@ -143,7 +151,7 @@ module.exports = function(grunt) {
     }
   };
 
-  addAdapterLibrariesToConfig(ADAPTER_LIBRARIES, config);
+  addAdapterLibrariesToConfig(config);
 
   // Project configuration.
   grunt.initConfig(config);
