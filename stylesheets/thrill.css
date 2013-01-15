@@ -1,0 +1,116 @@
+    @font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Source Sans Pro'), local('SourceSansPro-Regular'), url(./sourcesanspro.woff) format('woff');
+}
+
+    @font-face {
+      font-family: 'Anton';
+      font-style: normal;
+      font-weight: 400;
+      src: local('Anton'), url(./anton.woff) format('woff');
+    }
+
+  html {
+    height: 100%;
+  }
+  body {
+      height: 100%;
+      margin: 0;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+
+    background: rgb(250,211,0); /* Old browsers */
+    background: -moz-linear-gradient(top, rgba(250,211,0,1) 0%, rgba(241,180,0,1) 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(250,211,0,1)), color-stop(100%,rgba(241,180,0,1))); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top, rgba(250,211,0,1) 0%,rgba(241,180,0,1) 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top, rgba(250,211,0,1) 0%,rgba(241,180,0,1) 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top, rgba(250,211,0,1) 0%,rgba(241,180,0,1) 100%); /* IE10+ */
+    background: linear-gradient(to bottom, rgba(250,211,0,1) 0%,rgba(241,180,0,1) 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fad300', endColorstr='#f1b400',GradientType=0 ); /* IE6-9 */
+  }
+
+  body{
+    padding-top:150px;
+    position:relative;
+    font-family: 'Source Sans Pro', sans-serif;
+    text-align:center;
+  }
+  h1{
+    position:relative;
+    font-family: 'Anton', sans-serif;
+    text-transform: uppercase;
+    background-color:black;
+    font-size:70px;
+    letter-spacing:5px;
+    color:#f9d100;
+    z-index:1;
+  }
+
+  h2{ 
+    margin-top:130px;
+    font-size:20px;
+    cursor:default;
+  }
+
+  #logo{
+    position:absolute;
+    z-index:0;
+    top:45px;
+    width:200px;
+    left:50%;
+    margin-left:-100px;
+  }
+
+  #the-buttons{
+    margin:50px 0px;
+  }
+
+  #the-buttons a{
+    text-transform: uppercase;
+    display:inline-block;
+    margin:0px 60px;
+    background-color:black;
+    color:white;
+    font-size:24px;
+    position: relative;
+    text-decoration: none;
+  }
+  #the-buttons a:hover{
+    background-color:#830000;  
+  }
+
+  #the-buttons a:hover .edgy-border-tr, #the-buttons a:hover .edgy-border-bl{
+    color:#830000; border-bottom-color:#830000; border-top-color:#830000;
+  }
+  .edgy{
+    padding:0px 20px;
+    height:70px;
+    line-height:70px;
+  }
+
+  .edgy-border-tr{
+    color:black; position:absolute; top:0px; right:-70px; width: 0px; height: 0px; border-bottom: 70px solid black; border-right: 70px solid transparent;
+  }
+
+  .edgy-border-bl{
+    color:black; position:absolute; bottom:0px; left:-70px; width: 0px; height: 0px; border-top: 70px solid black; border-left: 70px solid transparent;
+  }
+
+  .edgy-label{
+    position:relative;
+    z-index:1;
+  }
+
+  #credit{
+
+  }
+
+  #credit a{
+    color:#576300;
+    text-decoration: none;
+  }
+  #credit a:hover{
+    color:black;
+  }
