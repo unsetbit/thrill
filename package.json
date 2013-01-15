@@ -5,7 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "commander": "~1.0.4",
-    "queen-remote": "~0.2.5",
+    "queen-remote": "~0.3.0",
     "express": "~3.0.0",
     "mocha": "~1.8.1",
     "precondition": "~1.0.0",

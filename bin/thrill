@@ -8,7 +8,9 @@ var app = require('commander'),
 	thrillRunner = require('../').runner,
 	configDir = require('../').configDir,
 	commandHandlerConfig = require(configDir + '/commands.json'),
-	commandHandlers = {};
+	commandHandlers = {},
+	startThrill = true,
+	config = {};
 
 // RESOLVE COMMAND PATHS
 utils.each(commandHandlerConfig, function(filePath, command){
@@ -30,7 +32,6 @@ app.option('-h, --host [host]', 'The host of the Queen server')
 	.option('-q, --quiet', 'Don\'t output anything to output stream')
 	.option('-v, --verbose', 'Whether to log verbosely');
 
-var startThrill = true;
 
 // Overwrite any command handler, that's one thing we can't overwrite
 commandHandlers["command"] = "./command/command.js";
@@ -42,7 +43,6 @@ utils.each(commandHandlers, function(handlerFilePath, command){
 	});
 });
 
-var config = {};
 app.command("*").action(function(filePath){
 	var args = Array.prototype.slice.call(arguments, 0);
 	// Discard the last arg, which is commander
@@ -55,6 +55,26 @@ app.command("*").action(function(filePath){
 	} else {
 		config.file = filePath;
 	}
+});
+
+app.on('--help', function(){
+  console.log('  Examples:');
+  console.log('');
+  console.log('  Start thrill in a directory with a thrill.js config file:');
+  console.log('    $ thrill');
+  console.log('');
+  console.log('  Start thrill, connecting to the Queen host "queen.turn.com" on port 9300:');
+  console.log('    $ thrill -h queen.turn.com:9300');
+  console.log('');
+  console.log('  Run the tests in file "test.html" with thrill:');
+  console.log('    $ thrill test.html');
+  console.log('');
+  console.log('  Run the tests in file "test.html" with thrill, seving the parent directory as the root directory:');
+  console.log('    $ thrill -s ../ test.html');
+  console.log('');
+  console.log('  Run test scripts:');
+  console.log('    $ thrill qunit.js my-tests/**/*.js');
+  console.log('');
 });
 
 app.parse(process.argv);
