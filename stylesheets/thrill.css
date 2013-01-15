@@ -46,6 +46,7 @@
     letter-spacing:5px;
     color:#f9d100;
     z-index:1;
+    cursor:default;
   }
 
   h2{ 
