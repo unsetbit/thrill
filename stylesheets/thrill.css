@@ -12,6 +12,13 @@
       src: local('Anton'), url(./anton.woff) format('woff');
     }
 
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Source Sans Pro Bold'), local('SourceSansPro-Bold'), url(./sourcesansprobold.woff) format('woff');
+}
+
   html {
     height: 100%;
   }
@@ -115,7 +122,9 @@
 
   #credit{
     font-family: 'Source Sans Pro', sans-serif;
-    padding-top:50px;
+    padding:50px 0px;
+
+    font-size:18px;
   }
 
   #about{
