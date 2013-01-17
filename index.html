@@ -14,21 +14,41 @@
     <![endif]-->
   </head>
   <body>
-    <img id="logo" src="katana.png"/>
-    <h1>Thrill</h1>
-    <h2>Automatically Test Web Applications on Many Browsers.</h2>
-    <div id="the-buttons">
-      <a id="use" href="#use" class="edgy"><span class="edgy-label">Use</span><span class="edgy-border-tr"></span><span class="edgy-border-bl"></span></a>
+    <div class="wrap">
+      <h2>Test Web Apps</h2>
+    </div>
+    <div class="black-bg">
+      <div class="wrap">
+        <img id="logo" src="katana.png"/>
+        <h1>Thrill<span id="version">0.4</span></h1>
+      </div>
+    </div>
+    
+    <div class="wrap">
+      <div id="the-buttons">
+        <a id="use" href="#use">Use</a>
 
-      <a id="learn" href="https://github.com/ozanturgut/thrill" class="edgy"><span class="edgy-label">Learn</span><span class="edgy-border-tr"></span><span class="edgy-border-bl"></span></a>
-      
-      <a id="develop" href="https://github.com/ozanturgut/thrill" class="edgy"><span class="edgy-label">Develop</span><span class="edgy-border-tr"></span><span class="edgy-border-bl"></span></a>
+        <a id="learn" href="https://github.com/ozanturgut/thrill" >Learn</a>
+        
+        <a id="develop" href="https://github.com/ozanturgut/thrill">Develop</a>
+      </div>
+      <div id="about">
+        <p>
+          Thrill is a test runner for teams needing to test their web application on many browsers.
+        </p>
+        <p>
+          Browsers connect to a central server. Developers requests tests to be run on the connected browsers remotely. QUnit, mocha, jasmine, and YUI tests work out of the box. Connect testing browsers manually, or automatically using Selenium, Browser Stack or Sauce Labs.
+        </p>
+      </div>
+      <div id="credit">
+        This is <a href="https://github.com/ozanturgut/thrill/blob/master/LICENSE-APACHE2">free</a> software created by <a href="https://github.com/ozanturgut">Ozan</a> at <a href="http://www.turn.com/platform">Turn</a>.
+      </div>
     </div>
 
-    <div id="credit">
-      This is <a href="https://github.com/ozanturgut/thrill/blob/master/LICENSE-APACHE2">free</a> software created by <a href="https://github.com/ozanturgut">Ozan</a> at <a href="http://www.turn.com/platform">Turn</a>. 
-    </div>
 
+
+    <a href="https://github.com/ozanturgut/thrill"><img style="z-index:100; position: fixed; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub"></a>
+  
     <!--[if !IE]><script>fixScale(document);</script><![endif]-->
         <script type="text/javascript">
       var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
@@ -40,6 +60,5 @@
       pageTracker._trackPageview();
       } catch(err) {}
     </script>
-
-  </body>
+</body>
 </html>

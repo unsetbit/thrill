@@ -21,94 +21,119 @@
       background-repeat: no-repeat;
       background-attachment: fixed;
 
-    background: rgb(250,211,0); /* Old browsers */
-    background: -moz-linear-gradient(top, rgba(250,211,0,1) 0%, rgba(241,180,0,1) 100%); /* FF3.6+ */
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(250,211,0,1)), color-stop(100%,rgba(241,180,0,1))); /* Chrome,Safari4+ */
-    background: -webkit-linear-gradient(top, rgba(250,211,0,1) 0%,rgba(241,180,0,1) 100%); /* Chrome10+,Safari5.1+ */
-    background: -o-linear-gradient(top, rgba(250,211,0,1) 0%,rgba(241,180,0,1) 100%); /* Opera 11.10+ */
-    background: -ms-linear-gradient(top, rgba(250,211,0,1) 0%,rgba(241,180,0,1) 100%); /* IE10+ */
-    background: linear-gradient(to bottom, rgba(250,211,0,1) 0%,rgba(241,180,0,1) 100%); /* W3C */
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fad300', endColorstr='#f1b400',GradientType=0 ); /* IE6-9 */
-  }
+      background-color:#fbd311;
 
-  body{
-    padding-top:150px;
+      background-image: linear-gradient(bottom, rgb(248,182,27) 0%, rgb(251,216,17) 100%);
+      background-image: -o-linear-gradient(bottom, rgb(248,182,27) 0%, rgb(251,216,17) 100%);
+      background-image: -moz-linear-gradient(bottom, rgb(248,182,27) 0%, rgb(251,216,17) 100%);
+      background-image: -webkit-linear-gradient(bottom, rgb(248,182,27) 0%, rgb(251,216,17) 100%);
+      background-image: -ms-linear-gradient(bottom, rgb(248,182,27) 0%, rgb(251,216,17) 100%);
+
+      background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0, rgb(248,182,27)),
+        color-stop(1, rgb(251,216,17))
+      );
+
+
+    padding-top:33px;
     position:relative;
     font-family: 'Source Sans Pro', sans-serif;
-    text-align:center;
+
   }
+
+
+  .black-bg{
+    background-color:black;
+  }
+
+  .wrap{
+    width:700px;
+    margin:0 auto;
+    position:relative;
+  }
+
   h1{
     position:relative;
     font-family: 'Anton', sans-serif;
     text-transform: uppercase;
     background-color:black;
-    font-size:70px;
+    font-size:90px;
     letter-spacing:5px;
-    color:#f9d100;
+    color:#f8d00e;
     z-index:1;
     cursor:default;
-  }
-
-  h2{ 
-    margin-top:130px;
-    font-size:20px;
-    cursor:default;
-    text-shadow:0px 1px 0px #AFB600;
   }
 
   #logo{
     position:absolute;
     z-index:0;
-    top:45px;
-    width:200px;
-    left:50%;
-    margin-left:-100px;
+    top:-118px;
+    width:229px;
+    left:10px;
+  }
+
+
+  h2{ 
+    width:120px;
+    text-align:left;
+    font-family: 'Anton', sans-serif;
+    top:33px;
+    font-weight:bold;
+    font-size:50px;
+    line-height:100%;
+    cursor:default;
+    text-transform: uppercase;
+    margin-bottom:33px;
+    
+  }
+
+  #version{
+     color:#4c1400;
+     margin-left:20px;
   }
 
   #the-buttons{
-    margin:50px 0px;
+    margin-top:100px;    
+    width:700px;
   }
 
   #the-buttons a{
+    font-family: 'Anton', sans-serif;
     text-transform: uppercase;
     display:inline-block;
-    margin:0px 60px;
-    background-color:black;
-    color:white;
-    font-size:24px;
+    margin:0px 60px 0px 0px;
+
+    color:black;
+    font-size:50px;
     position: relative;
     text-decoration: none;
   }
   #the-buttons a:hover{
-    background-color:#830000;  
-  }
-
-  #the-buttons a:hover .edgy-border-tr, #the-buttons a:hover .edgy-border-bl{
-    color:#830000; border-bottom-color:#830000; border-top-color:#830000;
-  }
-  .edgy{
-    padding:0px 20px;
-    height:70px;
-    line-height:70px;
-  }
-
-  .edgy-border-tr{
-    color:black; position:absolute; top:0px; right:-70px; width: 0px; height: 0px; border-bottom: 70px solid black; border-right: 70px solid transparent;
-  }
-
-  .edgy-border-bl{
-    color:black; position:absolute; bottom:0px; left:-70px; width: 0px; height: 0px; border-top: 70px solid black; border-left: 70px solid transparent;
-  }
-
-  .edgy-label{
-    position:relative;
-    z-index:1;
+    color:#a42c00;
   }
 
   #credit{
-    text-shadow:0px 1px 0px #AFB600;
+    font-family: 'Source Sans Pro', sans-serif;
+    padding-top:50px;
   }
 
+  #about{
+   font-family: 'Source Sans Pro', sans-serif;
+     margin-top:20px;
+    
+    font-weight:bold;
+    color:black;
+    font-size:18px;
+    width:500px;
+
+  }
+
+  p{
+    margin:20px 0px;
+  }
   #credit a{
     color:#576300;
 
