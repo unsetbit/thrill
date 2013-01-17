@@ -136,18 +136,24 @@
     width:700px;
 
   }
+
+  #about a{
+
+  }
+
+  #about a:hover{}
 b{
   font-weight:bold;
 }
   p{
     margin:20px 0px;
   }
-  #credit a{
-    color:#576300;
+ a{
+    color:#822200;
 
     text-decoration: none;
   }
-  #credit a:hover{
+  a:hover{
     color:black;
   }
 
