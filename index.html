@@ -37,7 +37,20 @@
           Thrill is a test runner for teams needing to test their web application on many browsers.
         </p>
         <p>
-          Browsers connect to a central server. Developers requests tests to be run on the connected browsers remotely. QUnit, mocha, jasmine, and YUI tests work out of the box. Connect testing browsers manually, or automatically using Selenium, Browser Stack or Sauce Labs.
+          Browsers connect to a central server. Developers requests tests to be run on the connected browsers remotely. For most projects, the only thing a developer will need to know to run tests is the host of the
+          central server.
+        </p>
+        <p>
+          Here are some features you might find... thrilling:
+          <ul>
+            <li><b>Automatic adaptation</b> of QUnit, jasmine, mocha, or YUI tests, allowing you to run them without any additional configuration.</li>
+            <li>Targeting of testing browsers based on user-agent (browser type), or capabilities (anything Modernizr can detect).</li>
+            <li>Automatic recovery of unresponsive browsers.</li>
+            <li>Automatic population of the central server using a Selenium Server, or from the cloud via Sauce Labs or Browser Stack.</li>
+            <li>Ability to run tests through the command like, as a Grunt task, or within your own library.
+            <li>A simple API to write your own adapters or reporters.</li>
+            <li>Ability to use mocha's reporters (even when you're running, say, QUnit tests).</li>
+          </ul>
         </p>
       </div>
       <div id="credit">

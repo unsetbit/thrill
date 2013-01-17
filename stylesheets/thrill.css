@@ -16,7 +16,6 @@
     height: 100%;
   }
   body {
-      height: 100%;
       margin: 0;
       background-repeat: no-repeat;
       background-attachment: fixed;
@@ -37,8 +36,6 @@
         color-stop(1, rgb(251,216,17))
       );
 
-
-    padding-top:33px;
     position:relative;
     font-family: 'Source Sans Pro', sans-serif;
 
@@ -77,6 +74,7 @@
 
 
   h2{ 
+    padding-top:33px;
     width:120px;
     text-align:left;
     font-family: 'Anton', sans-serif;
@@ -124,13 +122,14 @@
    font-family: 'Source Sans Pro', sans-serif;
      margin-top:20px;
     
-    font-weight:bold;
     color:black;
     font-size:18px;
-    width:500px;
+    width:700px;
 
   }
-
+b{
+  font-weight:bold;
+}
   p{
     margin:20px 0px;
   }
@@ -142,3 +141,8 @@
   #credit a:hover{
     color:black;
   }
+
+
+  ol{list-style-type:decimal;padding-left:20px;}
+  ul{list-style-type:square; padding-left:20px;}
+  li{margin:10px 0px;}
