@@ -3,7 +3,9 @@ var sinon = require('sinon'),
 	path = require('path'),
 	EventEmitter = require('events').EventEmitter,
 	adapters = require('../../').adapters,
-	mockFs = {},
+	mockFs = {
+		readFileSync: function(){return "";}
+	},
 	theModule = mocks.loadFile(path.resolve(path.dirname(module.filename), '../../lib/server/runner.js'),{
 		'./httpServer.js': createMockHttpServer,
 		'./thrill.js': createMockThrill,

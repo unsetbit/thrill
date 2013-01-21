@@ -1,6 +1,5 @@
 {
 	"autoAdapt": true,
-	"serve" : {},
 	"stream": true,
 	"timeout": 120000,
 	"quiet": false,

@@ -52,8 +52,10 @@ app.command("*").action(function(filePath){
 	// be sure.
 	if(args.length !== 1){
 		config.run = args;
+	} else if(path.basename(filePath).toLowerCase() === "thrill.js"){
+		config.config =  path.resolve(process.cwd(), filePath);
 	} else {
-		config.file = path.resolve(process.cwd(), filePath);
+		config.run = filePath; // Assume it's an html file
 	}
 });
 
