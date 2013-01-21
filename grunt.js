@@ -129,6 +129,7 @@ module.exports = function(grunt) {
         options: {
           node: true,
           sub: true,
+          boss:true,
           strict: false
         }
       },
