@@ -53,7 +53,7 @@ app.command("*").action(function(filePath){
 	if(args.length !== 1){
 		config.run = args;
 	} else {
-		config.file = filePath;
+		config.file = path.resolve(process.cwd(), filePath);
 	}
 });
 
@@ -89,10 +89,10 @@ if(app.noAutoAdapt !== void 0) config.autoAdapt = !app.noAutoAdapt;
 if(app.serve !== void 0) config.serve = app.serve;
 
 // Set the default config file
-if(!config.run && !config.file) config.file = 'thrill.js';
+if(!config.run && !config.file) config.file = path.resolve(process.cwd(), "thrill.js");
 
-thrillRunner(config, function(results){
-	if(results.passed){
+thrillRunner(config, function(passed){
+	if(passed){
 		process.exit(0);
 	} else {
 		process.exit(1);

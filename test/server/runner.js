@@ -11,11 +11,11 @@ var sinon = require('sinon'),
 		'fs': mockFs
 	});
 
-function createMockHttpServer(callback){
+function createMockHttpServer(options){
 	var mock = {};
 	mock.served = ["an.html"];
 	mock.serve = sinon.stub().returns(mock.served);
-	process.nextTick(function(){callback(mock)});
+	process.nextTick(function(){options.callback(mock)});
 	return mock;
 }
 
@@ -50,11 +50,11 @@ function createMockWorkforce(){
 	return mock;
 }
 
-function createMockThrill(callback){
+function createMockThrill(options){
 	var manager = createMockManager(createMockWorkforce().api);
 	var mock = sinon.stub().returns(manager.api);
 	mock.manager = manager;
-	process.nextTick(function(){callback(mock)});
+	process.nextTick(function(){options.callback(mock)});
 	return mock;
 }
 
@@ -128,32 +128,15 @@ exports.test = {
 
 		test.done();	
 	},
-	fileHandler: function(test){
-		var fileHandler = theModule.fileHandler,
-			config = {},
-			result;
-
-		mockFs.readFileSync = sinon.stub().returns("a=1");
-		result = fileHandler(config);
-		test.equals(result.a, 1, "Config file not parsed");
-	
-		mockFs.readFileSync = sinon.stub().returns("<html>");
-		config = {file: "mytests.html"};
-		result = fileHandler(config);
-		test.ok(config.run.length > 5, "Html file not picked up");
-		
-		mockFs.readFileSync = sinon.stub().returns("test()");
-		config = {file: "mytests.html"};
-		result = fileHandler(config);
-
-		test.ok(config.run && typeof config.run !== "string", "Test file not picked up");
-		
-		test.done();
-	},
 	runner: function(test){
 		var runner = theModule.runner;
+
 		test.throws(function(){runner();}, "Able to start without a config");
-		test.throws(function(){runner({});}, "Able to start without a run variable");
+
+		runner({callback: function(result){
+			test.ok(result, "Able to start without a run variable");
+		}})
+		
 		test.doesNotThrow(function(){runner({run: "bob.js"} , function(){console.log(arguments)})});
 		
 		// This could use some more testing...

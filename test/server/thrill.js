@@ -53,13 +53,13 @@ exports.thrill = {
 	setUp: function(callback){
 		this.queen = createMockQueen();
 		this.thrill = new Thrill(this.queen);
+		this.api = theModule.getApi(this.thrill);
 		callback();
 	},
 	construct: function(test){
-		test.throws(function(){t = theModule.create()}, "Able to construct with missing required params");
-
-		var t = theModule.create({queen: this.queen});
-		test.ok(t, "Unable to construct");		
+		theModule.create({queen: this.queen, callback: function(thrill){
+			test.ok(thrill, "Able to construct");
+		}});
 
 		test.done();
 	},
@@ -72,7 +72,7 @@ exports.thrill = {
 	},
 	getManager: function(test){
 		var spy = sinon.spy();
-		this.thrill.api.on('manager', spy);
+		this.api.on('manager', spy);
 		
 		var t = this.thrill.getManager({run : ""});
 		
