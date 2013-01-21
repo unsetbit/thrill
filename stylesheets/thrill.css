@@ -1,9 +1,3 @@
-    @font-face {
-  font-family: 'Source Sans Pro';
-  font-style: normal;
-  font-weight: 400;
-  src: local('Source Sans Pro'), local('SourceSansPro-Regular'), url(./sourcesanspro.woff) format('woff');
-}
 
     @font-face {
       font-family: 'Anton';
@@ -12,12 +6,22 @@
       src: local('Anton'), url(./anton.woff) format('woff');
     }
 
+
 @font-face {
-  font-family: 'Source Sans Pro';
+  font-family: 'Oswald';
   font-style: normal;
-  font-weight: 700;
-  src: local('Source Sans Pro Bold'), local('SourceSansPro-Bold'), url(./sourcesansprobold.woff) format('woff');
+  font-weight: 300;
+  src: local('Oswald Light'), local('Oswald-Light'), url(./oswald-light.woff) format('woff');
 }
+@font-face {
+  font-family: 'Oswald';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Oswald Regular'), local('Oswald-Regular'), url(./oswald.woff) format('woff');
+}
+
+
+
 
   html {
     height: 100%;
@@ -44,7 +48,7 @@
       );
 
     position:relative;
-    font-family: 'Source Sans Pro', sans-serif;
+    font-family: 'Oswald', sans-serif;
 
   }
 
@@ -100,10 +104,6 @@
      margin-left:20px;
   }
 
-  #the-buttons{
-    margin-top:100px;    
-    width:700px;
-  }
 
   #the-buttons a{
     font-family: 'Anton', sans-serif;
@@ -127,21 +127,20 @@
     font-size:18px;
   }
 
+  #body.wrap{
+    width:700px;
+    margin-top:126px;
+    padding:20px 40px;
+    background-color:rgba(255, 255, 255, 0.75);
+  }
+
   #about{
-   font-family: 'Source Sans Pro', sans-serif;
-     margin-top:20px;
+    margin-top:20px;
     
     color:black;
     font-size:18px;
-    width:700px;
-
   }
 
-  #about a{
-
-  }
-
-  #about a:hover{}
 b{
   font-weight:bold;
 }
@@ -149,12 +148,14 @@ b{
     margin:20px 0px;
   }
  a{
-    color:#822200;
+    color:black;
 
-    text-decoration: none;
+    text-decoration: underline;
   }
   a:hover{
     color:black;
+
+    text-decoration: none;
   }
 
 
