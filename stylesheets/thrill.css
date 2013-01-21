@@ -158,7 +158,32 @@ b{
     text-decoration: none;
   }
 
+  h3{
+    font-weight:bold;
+    font-size:24px;
+  }
 
+  .feature{
+    position:relative;
+    padding-left:70px;
+    margin-bottom:40px;
+    margin-top:5px;
+  }
+
+  .feature p{
+    margin-top:3px;
+    font-size:16px;
+  }
+
+  .feature img{
+    position: absolute;
+    left:0px;
+    top:8px;
+    width:50px;
+
+    margin-right:20px;
+
+  }
   ol{list-style-type:decimal;padding-left:20px;}
   ul{list-style-type:square; padding-left:20px;}
   li{margin:10px 0px;}
