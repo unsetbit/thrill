@@ -92,6 +92,10 @@ if(app.serve !== void 0) config.serve = app.serve;
 if(!config.run && !config.file) config.file = path.resolve(process.cwd(), "thrill.js");
 
 thrillRunner(config, function(passed){
+	if(passed instanceof Error){
+		throw passed;
+	}
+	
 	if(passed){
 		process.exit(0);
 	} else {
