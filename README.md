@@ -19,7 +19,7 @@ using mocha's many reporters, regardless of the testing framework you're using.
 
 ## Documentation
 * [Getting Started](https://github.com/ozanturgut/thrill/wiki/Use)
-* [Commendline Options](https://github.com/ozanturgut/thrill/wiki/Command-line-Options)
+* [Command line Options](https://github.com/ozanturgut/thrill/wiki/Command-line-Options)
 * [Developer Guide](https://github.com/ozanturgut/thrill/wiki/Developer-Guide)
 * [How Thrill Works](https://github.com/ozanturgut/thrill/wiki/How-Thrill-Works)
-* [Creating Thrill Adapters](https://github.com/ozanturgut/thrill/wiki/Client-side-Reporting-API-(thrill.js))
+* [Creating Thrill Adapters](https://github.com/ozanturgut/thrill/wiki/Client-side-Reporting-API-(thrill.js)
