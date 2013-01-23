@@ -1,0 +1,25 @@
+HTML Example
+
+This example will show you how you can run an HTML document which has your tests using Thrill.
+
+1) Start a queen server: queen -h localhost:9200 -c localhost:9000
+2) Capture a browser by navigating to http://localhost:9000 
+3) Start Thrill from this directory: thrill -h localhost:9200 test.html
+
+Here's what happened:
+1) You started the Queen server, and configured it to start listening for browsers to capture on
+localhost:9000, and to listen for remote connections on localhost:9200.
+
+2) You captured a browser by going to the capture point (localhost:9000).
+
+3) You started Thrill, telling it to connect to the Queen Server on localhost:9200. You provided
+Thrill with an HTML document, so Thrill read the HTML document, and found the furthest-most parent
+directory it refers to (which is the current directory in this case). It the started up an HTTP server,
+and began serving requests for the document. Then, it contacted the Queen server and asked for it to 
+have the HTML document to be loaded on all of its connected browsers. 
+
+While serving the HTML document, Thrill will check to see if there's a library in it that it can 
+adapt automatically. Since this document we requests to run uses QUnit, and Thrill can adapt to 
+QUnit, it will automatically inject it's adapter during the request. Note that the actual HTML 
+file is never modified and never knows of Thrill's existance, Thrill does all of this at the 
+HTTP server level.
