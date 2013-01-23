@@ -91,7 +91,7 @@ if(app.noAutoAdapt !== void 0) config.autoAdapt = !app.noAutoAdapt;
 if(app.serve !== void 0) config.serve = app.serve;
 
 // Set the default config file
-if(!config.run && !config.file) config.file = path.resolve(process.cwd(), "thrill.js");
+if(!config.run && !config.file) config.config = path.resolve(process.cwd(), "thrill.js");
 
 thrillRunner(config, function(passed){
 	if(passed instanceof Error){

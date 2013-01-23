@@ -1,0 +1,25 @@
+Scripts Example
+
+This example will show you how you can run test scripts using Thrill, without the 
+need for an HTML document.
+
+1) Start a queen server: queen -h localhost:9200 -c localhost:9000
+2) Capture a browser by navigating to http://localhost:9000 
+3) Start Thrill from this directory: thrill -h localhost:9200
+
+Here's what happened:
+1) You started the Queen server, and configured it to start listening for browsers to capture on
+localhost:9000, and to listen for remote connections on localhost:9200.
+
+2) You captured a browser by going to the capture point (localhost:9000).
+
+3) You started Thrill, telling it to connect to the Queen Server on localhost:9200. Since you provided
+no filenames, Thrill automatically checked for and found a thrill.js file in the directory. This
+file instructed Thrill to run qunit.js, test1.js, and test2.js in order. Thrill then started started
+an HTTP server to serve these files, and then sent a request to the Queen server to have all of it's
+browsers execute the three files in order and report on the status of the tests.
+
+Now try executing this from this folder: thrill -h localhost:9200 qunit.js test1.js test2.js
+
+This achieves the very same thing, but without the configuration file (since all it did was
+list the three files anyways).
