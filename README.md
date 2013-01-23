@@ -2,6 +2,9 @@
 
 Thrill runs tests in browsers.
 
+If you're new here, try the [quick start](https://github.com/ozanturgut/thrill/wiki/Use). 
+It's the fastest way to figure out what Thrill does and how it works.
+
 ## Central & Automated
 One server captures browsers for anyone in the network to run tests on. Automatically
 populate the pool using Selenium Grid, Sauce Labs, or Browser Stack. Choose which
