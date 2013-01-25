@@ -1,4 +1,4 @@
-# Thrill [![Build Status](https://secure.travis-ci.org/turn/thrill.png)](http://travis-ci.org/ozanturgut/thrill)
+# Thrill [![Build Status](https://secure.travis-ci.org/turn/thrill.png?branch=stable)](http://travis-ci.org/turn/thrill)
 
 Thrill runs tests in browsers.
 
