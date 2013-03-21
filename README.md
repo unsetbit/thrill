@@ -1,8 +1,8 @@
-# Thrill [![Build Status](https://secure.travis-ci.org/ozanturgut/thrill.png)](http://travis-ci.org/ozanturgut/thrill)
+# Thrill [![Build Status](https://secure.travis-ci.org/turn/thrill.png?branch=stable)](http://travis-ci.org/turn/thrill)
 
 Thrill runs tests in browsers.
 
-If you're new here, try the [quick start](https://github.com/ozanturgut/thrill/wiki/Use). 
+If you're new here, try the [quick start](https://github.com/turn/thrill/wiki/Use). 
 It's the fastest way to figure out what Thrill does and how it works.
 
 ## Central & Automated
@@ -21,4 +21,4 @@ Use the simple API to write your own adapters and reporters. Report tests
 using mocha's many reporters, regardless of the testing framework you're using.
 
 ## Documentation
-Please see the [wiki](https://github.com/ozanturgut/thrill/wiki) for full documentation of Thrill.
+Please see the [wiki](https://github.com/turn/thrill/wiki) for full documentation of Thrill.
